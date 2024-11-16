@@ -3,9 +3,9 @@ CS50 Final Project
 
 # Features
 - Calendar
-  - Google Calendar
+  - Google Calendar connectivity
 - Notetaking
   - Export as PDF
 - File converter
 - Timer/Pomodoro
-- Automatic email sender --> connect w/ Gmail & Outlook
+- Automatic email sender --> Gmail & Outlook connectivity
