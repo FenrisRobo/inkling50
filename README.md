@@ -8,4 +8,5 @@ CS50 Final Project
   - Export as PDF
 - File converter
 - Timer/Pomodoro
-- Automatic email sender --> Gmail & Outlook connectivity
+- Automatic email sender
+  - Gmail & Outlook connectivity
