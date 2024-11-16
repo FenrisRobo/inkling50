@@ -2,14 +2,14 @@
 CS50 Final Project
 
 # Features
-- Calendar
-  - Google Calendar connectivity
-- Notetaking
+1. Notetaking
   - Export as PDF
-- File converter
-- Timer/Pomodoro
-- Automatic email sender
+  - Spell-check
+2. Timer/Pomodoro
+3. Automatic email sender
   - Gmail & Outlook connectivity
+4. Calendar
+  - Google Calendar connectivity
 
 # Layout
 - Light & Dark Modes
