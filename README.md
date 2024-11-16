@@ -10,3 +10,8 @@ CS50 Final Project
 - Timer/Pomodoro
 - Automatic email sender
   - Gmail & Outlook connectivity
+
+# Layout
+- Light & Dark Modes
+- Word Counter
+- Minimalist, beveled edges
