@@ -1,17 +1,10 @@
-# inkling50
+# inkling50 - an ideas app
 CS50 Final Project
 
 # Features
-1. Notetaking
-  - Export as PDF
-  - Spell-check
-2. Timer/Pomodoro
-3. Automatic email sender
-  - Gmail & Outlook connectivity
-4. Calendar
-  - Google Calendar connectivity
-
-# Layout
-- Light & Dark Modes
-- Word Counter
-- Minimalist, beveled edges
+- Fully Functional Word Processing Program
+  -Document storage, highlighting, typesetting, etc.
+- Timed Typing
+  - If user doesn't add text within set time, document "locks" as an image-like, uncopyable text file
+- Journal Function
+  - Each written document is stored in a calendar of when it was written. 
