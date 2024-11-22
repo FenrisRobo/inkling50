@@ -1,5 +1,4 @@
 import sys
-import flet
 import tkinter # standard Python interface to the Tk GUI toolkit
 import os # Python library to create methods to interact with OSs
 from tkinter import *
@@ -85,7 +84,7 @@ class Notepad:
         self.__thisFileMenu.add_command(label="Open", command=self.__openFile)
 
         # To save current file
-        self.__thisFileMenu.add_coand(label="Save", command=self.__saveFile)
+        self.__thisFileMenu.add_command(label="Save", command=self.__saveFile)
 
         # To create a line in the dialog
         self.__thisFileMenu.add_separator()
@@ -124,68 +123,70 @@ class Notepad:
         showinfo("Notepad", "Mrinal Verma")
     
     def __openFile(self):
-
         self.__file = askopenfilename(defaultextension=".txt",
-            filetypes=[("All Files", "*.*"),("Text Documents","*.txt")])
-    
+            filetypes=[("All Files", "*.*"),("Text Documents", "*.txt")])
+
         if self.__file == "":
-
-            # no file to open
-
             self.__file = None
+        
         else:
+        
+            try:
+            
+                self.__root.title(os.path.basename(self.__file) + " - Notepad")
+                self.__thisTextArea.delete(1.0, END)
 
-            # try to open the file
+                with open(self.__file, "r") as file:
+                
+                    self.__thisTextArea.insert(1.0, file.read())
+                
+            except Exception as e:
+            
+                showerror("Error", f"Could not open file: {e}")
+            
+    def __newFile(self):
+        self.__root.title("Untitled - Notepad")
+        self.__file = None
+        self.__thisTextArea.delete(1.0,END)
 
-            # set the window title
+    def __saveFile(self):
+        if self.__file == None:
+            # Save as new file
+            self.__file = asksaveasfilename(initialfile='Untitled.txt', defaultextension=".txt", filetypes=[("All Files","*.*"),("Text Document","*.txt")])
 
-            self.__root.title(os.path.basename(self.__file) + " - Notepad")
-            self.__thisTextArea.delete(1.0,END)
+            if self.__file == "":
+                self.__file = None
 
-            file = open(self.__file,"r")
-
-            self.__thisTextArea.insert(1.0,file.read())
-
-            file.close()
-
-        def __newFile(self):
-            self.__root.title("Untitled - Notepad")
-            self.__file = None
-            self.__thisTextArea.delete(1.0,END)
-
-        def __saveFile(self):
-            if self.__file == None:
-                # Save as new file
-                self.__file = asksaveasfilename(initialfile='Untitled.txt', defaultextension=".txt", filetypes=[("All Files","*.*"),("Text Document","*.txt")])
-
-                if self.__file == "":
-                    self.__file = None
-
-                else:
-
-                # Try to save the file
-                    file = open(self.__file,"w")
-                    file.write(self.__thisTextArea.get(1.0,END))
-                    file.close()
-
-                # Change the window title
-                    self.__root.title(os.path.basename(self.__file) + " - Notepad")
             else:
+
+            # Try to save the file
                 file = open(self.__file,"w")
                 file.write(self.__thisTextArea.get(1.0,END))
                 file.close()
 
-        def __cut(self):
-            self.__thisTextArea.event_generate("<<Cut>>")
-        
-        def __copy(self):
-            self.__thisTextArea.event_generate("<<Copy>>")
+            # Change the window title
+                self.__root.title(os.path.basename(self.__file) + " - Notepad")
+        else:
+            file = open(self.__file,"w")
+            file.write(self.__thisTextArea.get(1.0,END))
+            file.close()
 
-        def __paste(self):
-            self.__thisTextArea.event_generate("<<Paste>>")
-        
-        def run(self):
+    def __cut(self):
+        self.__thisTextArea.event_generate("<<Cut>>")
+    
+    def __copy(self):
+        self.__thisTextArea.event_generate("<<Copy>>")
 
-            # Run main application
+    def __paste(self):
+        self.__thisTextArea.event_generate("<<Paste>>")
+    
+    def run(self):
 
-            self.__root.mainloop()
+         # Run main application
+
+        self.__root.mainloop()
+
+# Run main application
+
+notepad = Notepad(width=600, height=400)
+notepad.run()
