@@ -8,3 +8,5 @@ CS50 Final Project
   - If user doesn't add text within set time, document "locks" as an image-like, uncopyable text file
 - Journal Function
   - Each written document is stored in a calendar of when it was written. 
+
+wahoo
