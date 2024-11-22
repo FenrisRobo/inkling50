@@ -85,7 +85,7 @@ class Notepad:
         self.__thisFileMenu.add_command(label="Open", command=self.__openFile)
 
         # To save current file
-        self.__thisFileMenu.add_comomand(label="Save", command=self.__saveFile)
+        self.__thisFileMenu.add_coand(label="Save", command=self.__saveFile)
 
         # To create a line in the dialog
         self.__thisFileMenu.add_separator()
