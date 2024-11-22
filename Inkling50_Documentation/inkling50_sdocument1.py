@@ -113,7 +113,7 @@ class Notepad:
 
         # Scrollbar will adjust automatically accordng to the content
         self.__thisScrollBar.config(command=self.__thisTextArea.yview)
-        self.__thisTextArea.config(yscrollcommand=self.__thisScrollBar.config)
+        self.__thisTextArea.config(yscrollcommand=self.__thisScrollBar.set)
 
     def __quitApplication(self):
         self.__root.destroy()
