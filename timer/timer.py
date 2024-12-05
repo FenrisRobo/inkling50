@@ -14,12 +14,31 @@ def main(page: ft.Page) -> None:
     seconds = ft.TextField(hint_text = "Seconds", border_radius = 30, width = 120, text_align = "center")
 
     def start_timer(e):
-        button.visible = False
-        minutes_value = int(minutes.value)
-        seconds_value = int(seconds.value)
-        seconds_remaining = (minutes_value * 60) + seconds_value
+        start_button.visible = False
+        pause_button.visible = True
 
-        while seconds_remaining:
+        try:
+            minutes_value = int(minutes.value)
+            seconds_value = int(seconds.value)
+        except:
+            ...
+        
+        seconds_remaining = (minutes_value * 60) + seconds_value
+        countdown(seconds_remaining, minutes_value, seconds_value, stop_count)
+    
+    def pause_timer(e):
+        start_button.visible = True
+        pause_button.visible = False
+        
+        if stop_count[0] == True:
+            stop_count[0] = False
+            countdown()
+        else:
+            stop_count[0] = True
+            countdown()
+    
+    def countdown(seconds_remaining, minutes_value, seconds_value, stop_count):
+        while seconds_remaining and not stop_count[0]:
             seconds_remaining -= 1
             minutes_update, seconds_update = divmod(seconds_remaining, 60)
             timer.value = "{:02d} min {:02d} sec".format(minutes_update, seconds_update)
@@ -28,12 +47,15 @@ def main(page: ft.Page) -> None:
 
         time.sleep(1)
         timer.value = "{:02d} min {:02d} sec".format(minutes_value, seconds_value)
-        button.visible = True
+        start_button.visible = True
+        pause_button.visible = False
         page.update()
     
     timer = ft.Text(style = "displayLarge", color = "white")
-    button = ft.ElevatedButton("Set Timer", on_click =  start_timer, color = "#85A27F")
+    start_button = ft.ElevatedButton("Start", on_click =  start_timer, color = "#85A27F")
+    pause_button = ft.ElevatedButton("Pause", on_click = pause_timer, color = "#85A27F", visible = False)
+    stop_count = [False]
 
-    page.add(ft.Container(padding = 20), ft.Row([minutes, seconds, button], alignment = "center"), ft.Container(padding = 20), timer, ft.Container(padding = 20))
+    page.add(ft.Container(padding = 20), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 20), timer, ft.Container(padding = 20))
 
 ft.app(main)
