@@ -8,8 +8,8 @@ def main(page: ft.Page) -> None:
     page.vertical_alignment = "center"
     page.padding = 40
     page.window_frameless = True
-    page.window_height = 510
-    page.window_width = 490
+    page.window_height = 300
+    page.window_width = 425
 
     minutes = ft.Dropdown(label = "Minutes", hint_text = "0 to 10", width = "125")
     for i in range(11): minutes.options.append(ft.dropdown.Option(i))
@@ -32,22 +32,7 @@ def main(page: ft.Page) -> None:
 
         # Calculate seconds remaining and start countdown
         seconds_remaining = (minutes_value * 60) + seconds_value
-        countdown(seconds_remaining, minutes_value, seconds_value, stop_count)
-    
-    # Pause the timer
-    def pause_timer(e):
-        global seconds_remaining
-        start_button.visible = True
-        pause_button.visible = False
-        
-        if stop_count[0] == True:
-            stop_count[0] = False
-            seconds_remaining = 0
-        else:
-            stop_count[0] = True
-    
-    # Countdown and update output accordingly
-    def countdown(seconds_remaining, minutes_value, seconds_value, stop_count):
+
         while seconds_remaining and not stop_count[0]:
             minutes_update, seconds_update = divmod(seconds_remaining, 60)
             timer.value = "{:02d} min {:02d} sec".format(minutes_update, seconds_update)
@@ -61,13 +46,24 @@ def main(page: ft.Page) -> None:
         pause_button.visible = False
         page.update()
     
+    # Pause the timer
+    def pause_timer(e):
+
+        if stop_count[0] == True:
+            stop_count[0] = False
+            start_button.visible = True
+            start_button.disabled = False
+            pause_button.visible = False
+        else:
+            stop_count[0] = True
+
     # Set up display and stop_count variable to control pausing
-    timer = ft.Text(style = "displayLarge", color = "white")
+    timer = ft.Text(style = "displaySmall", color = "white")
     start_button = ft.ElevatedButton("Start", on_click =  start_timer, color = "#85A27F")
     pause_button = ft.ElevatedButton("Pause", on_click = pause_timer, color = "#85A27F", visible = False)
     stop_count = [False]
 
     # Add elements to page
-    page.add(ft.Container(padding = 20), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 20), timer, ft.Container(padding = 20))
+    page.add(ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)"), ft.Container(padding = 5), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 5), timer, ft.Container(padding = 5))
 
 ft.app(main)
