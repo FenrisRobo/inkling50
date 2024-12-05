@@ -40,6 +40,10 @@ class Notepad:
         # Adjust window size
         self.__root.bind("<Configure>", self.__adjustSize)
 
+        # Add font tags
+        self.style_tags={"bold", "italic", "underline", "bold italic", "bold italic underline", "bold italic underline", "italic underline", "bold underline"}
+
+
         # Toolbar
         toolbar = Frame(self.__root, height=30, bg="lightgray")
         toolbar.grid(row=0, column=0, columnspan=3, sticky=W+E)
@@ -175,31 +179,83 @@ class Notepad:
         if size:
             self.__applyTag("font_size", {"font": ("Calibri", size)})
 
-    def __applyTag(self, tag, options):
-        try:
-            # Get the current selection (if any)
-            current_tags = self.__thisTextArea.tag_names(SEL_FIRST)
-            
-            # Determine if any combination of bold, italic, or underline is already applied
-            current_font = self.__thisTextArea.tag_cget(tag, "font") if tag in current_tags else ("Calibri", 12)
-            
-            # Apply the font styles based on the current state
-            if tag == "bold":
-                current_font = ("Calibri", 12, "bold")
-            elif tag == "italic":
-                current_font = ("Calibri", 12, "italic")
-            elif tag == "underline":
-                current_font = ("Calibri", 12, "underline")
-            
-            # Configure the tag with the updated font settings
-            self.__thisTextArea.tag_configure(tag, font=current_font)
-            
-            # Add the tag to the selected text
-            if tag not in current_tags:
-                self.__thisTextArea.tag_add(tag, SEL_FIRST, SEL_LAST)
-        except TclError:
-            showerror("Error", "Please select text to apply formatting.")
+    def clear_multiple_styles(self, pos, w=None):
+        #This gets rid of all multi-style tags (like "bold italic underline").
+        if w==None:
+            w=self.myTextWidget
+        for x in self.style_tags:
+            s=Switch(); #This is my version of a switch statement (so I don't have to type my compare variable every time), with added flexibility.
+            s.switch(x)
+            if s.neq("bold", "italic", "underline"): #This means, if x isn't equal to any of them
+                if x in w.tag_names(pos):
+                    w.tag_remove(x, pos)
 
+    def update_style(self, pos, w=None):
+        #This updates the styles of an index to take care of overlapping style tags.
+        if w==None:
+            w=self.myTextWidget
+        self.clear_multiple_styles(pos, w)
+        s=Switch()
+        s.switch(w.tag_names(pos))
+        if s.ins("bold", "italic", "underline"): #i.e. If these args are all in w.tag_names(pos)
+            w.tag_add("bold italic underline", pos)
+        elif s.ins("bold", "italic", "underline"):
+            w.tag_add("bold italic underline", pos)
+        elif s.ins("bold", "italic"):
+            w.tag_add("bold italic", pos)
+        elif s.ins("bold", "underline"):
+            w.tag_add("bold underline", pos)
+        elif s.ins("italic", "underline"):
+            w.tag_add("italic underline", pos)
+
+    def invert_style_tag(self, start, end=None, tag="bold", w=None):
+        if w==None:
+            w=self.myTextWidget
+        i=0
+        if end==None:
+            if tag in w.tag_names(start):
+                w.tag_remove(tag, start)
+            else:
+                w.tag_add(tag, start)
+            self.update_style(start)
+        else:
+            while w.compare(start+"+"+str(i)+"c", "<", end):
+                if tag in w.tag_names(start+"+"+str(i)+"c"):
+                    w.tag_remove(tag, start+"+"+str(i)+"c")
+                else:
+                    w.tag_add(tag, start+"+"+str(i)+"c")
+                self.update_style(start+"+"+str(i)+"c")
+                i+=1
+        self.set_tag_styles()
+
+    def set_tag_styles(self):
+        single_styles={"bold", "italic", "underline"}
+        for x in self.style_tags:
+            x_list=x.split()
+            self.myTextWidget.tag_config(x, font=[self.d["font"][0], self.d["font"][1]]+x_list); #You can add lists together to get the extra arguments in.
+            for y in single_styles:
+                if x not in single_styles:
+                    self.myTextWidget.tag_raise(x); #Gives the multi-style tag higher priority than existing single-style tags
+    
+    def style_text(self, style):
+        try:
+            self.invert_style_tag("sel.first", "sel.last", style)
+        except:
+            if self.myTextWidget.get("insert wordstart") in {" ", "\n", "\t", "\r", " "}:
+                pass
+            else:
+                self.invert_style_tag("insert wordstart", "insert wordend", style)
+
+    def __applyTag(self, tag, config):
+        self.__thisTextArea.tag_config(tag, **config)  # Apply font and other settings
+        try:
+            current_tags = self.__thisTextArea.tag_names("sel.first")
+            if tag in current_tags:
+                self.__thisTextArea.tag_remove(tag, "sel.first", "sel.last")
+            else:
+                self.__thisTextArea.tag_add(tag, "sel.first", "sel.last")
+        except:
+            pass
 
     def __makeBold(self):
         self.__applyTag("bold", {"font": ("Calibri", 12, "bold")})
@@ -209,7 +265,7 @@ class Notepad:
 
     def __makeUnderline(self):
         self.__applyTag("underline", {"font": ("Calibri", 12, "underline")})
-
+    
     def run(self):
         self.__root.mainloop()
 
