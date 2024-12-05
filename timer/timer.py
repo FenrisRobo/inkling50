@@ -63,7 +63,7 @@ def main(page: ft.Page) -> None:
     pause_button = ft.ElevatedButton("Pause", on_click = pause_timer, color = "#85A27F", visible = False)
     stop_count = [False]
 
-    # Add elements to page
+    # Add controls to page
     page.add(ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)"), ft.Container(padding = 5), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 5), timer, ft.Container(padding = 5))
 
 ft.app(main)
