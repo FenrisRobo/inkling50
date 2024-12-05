@@ -3,7 +3,7 @@ import os
 from tkinter import *
 from tkinter.messagebox import *
 from tkinter.filedialog import *
-from tkinter import simpledialog
+from tkinter import simpledialog  # Import simpledialog for font size input
 from fpdf import FPDF  # For saving files as PDF
 
 class Notepad:
@@ -26,12 +26,18 @@ class Notepad:
         left = (screenWidth / 2) - (self.__thisWidth / 2)
         top = (screenHeight / 2) - (self.__thisHeight / 2)
         self.__root.geometry(f'{self.__thisWidth}x{self.__thisHeight}+{int(left)}+{int(top)}')
-        self.__root.grid_rowconfigure(0, weight=1)
+        
+        # Configure grid layout
+        self.__root.grid_rowconfigure(0, weight=1)  # Text area
+        self.__root.grid_rowconfigure(1, weight=0)  # Status bar
         self.__root.grid_columnconfigure(0, weight=1)
-        self.__thisTextArea.grid(sticky=N + E + S + W)
+        
+        # Add the text area
+        self.__thisTextArea.grid(row=0, column=0, sticky=N + E + S + W)
         self.__thisScrollBar.pack(side=RIGHT, fill=Y)
         self.__thisScrollBar.config(command=self.__thisTextArea.yview)
         self.__thisTextArea.config(yscrollcommand=self.__thisScrollBar.set)
+        
         self.__createMenuBar()
         self.__createStatusBar()
         self.__root.config(menu=self.__thisMenuBar)
@@ -57,7 +63,7 @@ class Notepad:
 
     def __createStatusBar(self):
         self.__statusBar = Label(self.__root, text="Words: 0", anchor=W)
-        self.__statusBar.pack(side=BOTTOM, fill=X)
+        self.__statusBar.grid(row=1, column=0, sticky=W+E, columnspan=2)
         self.__thisTextArea.bind("<KeyRelease>", self.__updateWordCount)
 
     def __updateWordCount(self, event=None):
