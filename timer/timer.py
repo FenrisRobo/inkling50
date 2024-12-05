@@ -2,6 +2,7 @@ import flet as ft
 import time
 
 def main(page: ft.Page) -> None:
+    # Page formatting
     page.theme_mode = ft.ThemeMode.SYSTEM
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
@@ -17,19 +18,23 @@ def main(page: ft.Page) -> None:
     dialog = ft.AlertDialog(bgcolor = "#85A27F", title = ft.Text("Please enter a valid number for minutes (0 to 10) and seconds (1 to 59). Click outside the dialog to exit."))
 
     def start_timer(e):
+        # Buttons for testing
         start_button.visible = False
         pause_button.visible = True
 
+        # Convert user input to int
         try:
             minutes_value = int(minutes.value)
             seconds_value = int(seconds.value)
         except:
             page.open(dialog)
             return
-    
+
+        # Calculate seconds remaining and start countdown
         seconds_remaining = (minutes_value * 60) + seconds_value
         countdown(seconds_remaining, minutes_value, seconds_value, stop_count)
     
+    # Pause the timer
     def pause_timer(e):
         global seconds_remaining
         start_button.visible = True
@@ -41,6 +46,7 @@ def main(page: ft.Page) -> None:
         else:
             stop_count[0] = True
     
+    # Countdown and update output accordingly
     def countdown(seconds_remaining, minutes_value, seconds_value, stop_count):
         while seconds_remaining and not stop_count[0]:
             minutes_update, seconds_update = divmod(seconds_remaining, 60)
@@ -55,11 +61,13 @@ def main(page: ft.Page) -> None:
         pause_button.visible = False
         page.update()
     
+    # Set up display and stop_count variable to control pausing
     timer = ft.Text(style = "displayLarge", color = "white")
     start_button = ft.ElevatedButton("Start", on_click =  start_timer, color = "#85A27F")
     pause_button = ft.ElevatedButton("Pause", on_click = pause_timer, color = "#85A27F", visible = False)
     stop_count = [False]
 
+    # Add elements to page
     page.add(ft.Container(padding = 20), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 20), timer, ft.Container(padding = 20))
 
 ft.app(main)
