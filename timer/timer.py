@@ -12,6 +12,7 @@ def main(page: ft.Page) -> None:
 
     minutes = ft.TextField(hint_text = "Minutes", border_radius = 30, width = 120, text_align = "center")
     seconds = ft.TextField(hint_text = "Seconds", border_radius = 30, width = 120, text_align = "center")
+    dialog = ft.AlertDialog(bgcolor = "#85A27F", title = ft.Text("Please enter a valid number for minutes (0 to 10) and seconds (1 to 59). Click outside the dialog to exit."))
 
     def start_timer(e):
         start_button.visible = False
@@ -21,28 +22,36 @@ def main(page: ft.Page) -> None:
             minutes_value = int(minutes.value)
             seconds_value = int(seconds.value)
         except:
-            ...
+            page.open(dialog)
+            return
         
+        if seconds_value < 1 or seconds_value > 59:
+            page.open(dialog)
+            return
+        elif minutes_value < 0 or minutes_value > 10:
+            page.open(dialog)
+            return
+    
         seconds_remaining = (minutes_value * 60) + seconds_value
         countdown(seconds_remaining, minutes_value, seconds_value, stop_count)
     
     def pause_timer(e):
+        global seconds_remaining
         start_button.visible = True
         pause_button.visible = False
         
         if stop_count[0] == True:
             stop_count[0] = False
-            countdown()
+            seconds_remaining = 0
         else:
             stop_count[0] = True
-            countdown()
     
     def countdown(seconds_remaining, minutes_value, seconds_value, stop_count):
         while seconds_remaining and not stop_count[0]:
-            seconds_remaining -= 1
             minutes_update, seconds_update = divmod(seconds_remaining, 60)
             timer.value = "{:02d} min {:02d} sec".format(minutes_update, seconds_update)
             time.sleep(1)
+            seconds_remaining -= 1
             page.update()
 
         time.sleep(1)
