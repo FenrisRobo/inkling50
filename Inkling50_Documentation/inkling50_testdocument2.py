@@ -1,3 +1,4 @@
+import time
 import sys
 import os
 import ttkbootstrap
@@ -9,6 +10,7 @@ from tkinter.messagebox import *
 from tkinter.filedialog import *
 from tkinter import simpledialog  # Import simpledialog for font size input
 from fpdf import FPDF  # For saving files as PDF
+from threading import Timer
 
 class Notepad:
     __root = Window(themename="journal")
@@ -18,16 +20,12 @@ class Notepad:
     __thisEditMenu = Menu(__thisMenuBar, tearoff=0)
     __thisFormatMenu = Menu(__thisMenuBar, tearoff=0)
     __thisHelpMenu = Menu(__thisMenuBar, tearoff=0)
-    __thisScrollBar = Scrollbar(__thisTextArea)
-    __file = None
 
     def __init__(self):
-        
         # Root window with ttkbootstrap
         self.__root.title("Notepad")
         self.__root.geometry("800x600")  # Set a default size
 
-        
         # Configure root grid layout
         self.__root.grid_rowconfigure(1, weight=1)  # Text area should expand
         self.__root.grid_columnconfigure(1, weight=1)  # Center frame (Text) should expand
@@ -40,9 +38,22 @@ class Notepad:
         # Adjust window size
         self.__root.bind("<Configure>", self.__adjustSize)
 
+        # Add font tags
+        self.style_tags = {"bold", "italic", "underline", "bold italic", "bold italic underline", "bold italic underline", "italic underline", "bold underline"}
+
+        # Margins
+        margin_left = Frame(self.__root, width=50, bg="lightgray")
+        margin_left.grid(row=1, column=0, sticky=NS)
+
+        text_frame = Frame(self.__root)
+        text_frame.grid(row=1, column=1, sticky=NSEW)
+
+        self.__thisTextArea = Text(text_frame, wrap=WORD, undo=True, font=("Calibri", 12))
+        self.__thisTextArea.pack(fill=BOTH, expand=True)
+
         # Toolbar
         toolbar = Frame(self.__root, height=30, bg="lightgray")
-        toolbar.grid(row=0, column=0, columnspan=3, sticky=W+E)
+        toolbar.grid(row=0, column=0, columnspan=3, sticky=W + E)
 
         # Toolbar Buttons
         bold_btn = Button(toolbar, text="B", command=self.__makeBold, font=("Calibri", 12, "bold"), width=3)
@@ -57,45 +68,37 @@ class Notepad:
         theme_btn = Button(toolbar, text="Toggle Theme", command=self.__toggleDarkMode)
         theme_btn.pack(side=RIGHT, padx=5, pady=5)
 
-        # Toolbar Button Shortcut
+        # Bind events
+        self.__root.bind("<Key>", self.__onKeyPress)
         self.__root.bind("<Control-b>", lambda event: self.__makeBold())
         self.__root.bind("<Control-i>", lambda event: self.__makeItalic())
         self.__root.bind("<Control-u>", lambda event: self.__makeUnderline())
         self.__root.bind("<Control-c>", lambda event: self.__thisTextArea.event_generate("<<Copy>>"))
         self.__root.bind("<Control-v>", lambda event: self.__thisTextArea.event_generate("<<Paste>>"))
 
-        # Margins
-        margin_left = Frame(self.__root, width=50, bg="lightgray")
-        margin_left.grid(row=1, column=0, sticky=NS)
+        # Timer for idle time tracking
+        self.idle_time_limit = 5  # seconds
+        self.timer = None  # Timer will be reset on every key press
 
-        text_frame = Frame(self.__root)
-        text_frame.grid(row=1, column=1, sticky=NSEW)
-
-        self.__thisTextArea = Text(text_frame, wrap=WORD, undo=True, font=("Calibri", 12))
-        self.__thisTextArea.pack(fill=BOTH, expand=True)
-
-        # Set the scrollbar
-        self.__thisScrollBar = Scrollbar(self.__thisTextArea)
-        self.__thisScrollBar.pack(side=RIGHT, fill=Y)
-        self.__thisScrollBar.config(command=self.__thisTextArea.yview)
-        self.__thisTextArea.config(yscrollcommand=self.__thisScrollBar.set)
-
-        margin_right = Frame(self.__root, width=50, bg="lightgray")
-        margin_right.grid(row=1, column=2, sticky=NS)
-
-        # Word Count
-        self.__statusBar = Label(self.__root, text="Words: 0", anchor=E, bg="white", relief=SUNKEN)
-        self.__statusBar.grid(row=3, column=0, columnspan=3, sticky=W+E)
-
-        # Configure resizing weights
-        self.__root.grid_rowconfigure(1, weight=1)  # Allow text frame to expand vertically
-        self.__root.grid_columnconfigure(1, weight=1)  # Allow text frame to expand horizontally
-
-        # Bind events
-        self.__thisTextArea.bind("<KeyRelease>", self.__updateWordCount)
-
+        # Start the main loop
         self.__root.mainloop()
 
+    def __onKeyPress(self, event):
+        """Triggered on every key press to reset the timer"""
+        self.__resetIdleTimer()
+
+    def __resetIdleTimer(self):
+        """Reset the idle timer each time a key is pressed"""
+        if self.timer:
+            self.timer.cancel()  # Cancel the previous timer if it's still running
+        
+        # Set a new timer that triggers when the idle time limit is reached
+        self.timer = Timer(self.idle_time_limit, self.__onIdleTimeout)
+        self.timer.start()
+
+    def __onIdleTimeout(self):
+        """This method is called when the user is idle for the defined time"""
+        print("User is idle for too long!")
 
     def __createMenuBar(self):
         self.__thisFileMenu.add_command(label="New", command=self.__newFile)
@@ -121,24 +124,6 @@ class Notepad:
         self.__statusBar.grid(row=1, column=0, sticky=W+E, columnspan=2)
         self.__thisTextArea.bind("<KeyRelease>", self.__updateWordCount)
 
-    def __updateWordCount(self, event=None):
-        text = self.__thisTextArea.get(1.0, END)
-        words = len(text.split())
-        self.__statusBar.config(text=f"Words: {words}")
-
-    def __toggleDarkMode(self):
-        current_theme = self.__root.style.theme_use()
-        new_theme = "darkly" if current_theme == "journal" else "journal"
-        self.__root.style.theme_use(new_theme)
-    def __adjustSize(self, event=None):
-        self.__thisTextArea.config(width=self.__root.winfo_width(), height=self.__root.winfo_height())
-    
-    def __quitApplication(self):
-        self.__root.destroy()
-
-    def __showAbout(self):
-        showinfo("Notepad", "Enhanced Notepad with Advanced Features")
-
     def __newFile(self):
         self.__root.title("Untitled - Notepad")
         self.__file = None
@@ -160,46 +145,29 @@ class Notepad:
         with open(self.__file, "r") as file:
             self.__thisTextArea.insert(1.0, file.read())
 
-
-    def __saveAsPDF(self):
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Calibri", size=12)
-        lines = self.__thisTextArea.get(1.0, END).splitlines()
-        for line in lines:
-            pdf.cell(200, 10, txt=line, ln=True)
-        pdf.output(self.__file)
+    def __updateWordCount(self, event=None):
+        text = self.__thisTextArea.get(1.0, END)
+        words = len(text.split())
+        self.__statusBar.config(text=f"Words: {words}")
 
     def __changeFontSize(self):
-        size = simpledialog.askinteger("Font Size", "Enter font size:", initialvalue=12)
+        size = simpledialog.askinteger("Font Size", "Enter font size:", initialvalue=11)
         if size:
             self.__applyTag("font_size", {"font": ("Calibri", size)})
 
-    def __applyTag(self, tag, options):
-        try:
-            # Get the current selection (if any)
-            current_tags = self.__thisTextArea.tag_names(SEL_FIRST)
-            
-            # Determine if any combination of bold, italic, or underline is already applied
-            current_font = self.__thisTextArea.tag_cget(tag, "font") if tag in current_tags else ("Calibri", 12)
-            
-            # Apply the font styles based on the current state
-            if tag == "bold":
-                current_font = ("Calibri", 12, "bold")
-            elif tag == "italic":
-                current_font = ("Calibri", 12, "italic")
-            elif tag == "underline":
-                current_font = ("Calibri", 12, "underline")
-            
-            # Configure the tag with the updated font settings
-            self.__thisTextArea.tag_configure(tag, font=current_font)
-            
-            # Add the tag to the selected text
-            if tag not in current_tags:
-                self.__thisTextArea.tag_add(tag, SEL_FIRST, SEL_LAST)
-        except TclError:
-            showerror("Error", "Please select text to apply formatting.")
+    def __toggleDarkMode(self):
+        current_theme = self.__root.style.theme_use()
+        new_theme = "darkly" if current_theme == "journal" else "journal"
+        self.__root.style.theme_use(new_theme)
 
+    def __adjustSize(self, event=None):
+        self.__thisTextArea.config(width=self.__root.winfo_width(), height=self.__root.winfo_height())
+
+    def __quitApplication(self):
+        self.__root.destroy()
+
+    def __showAbout(self):
+        showinfo("Notepad", "Enhanced Notepad with Advanced Features")
 
     def __makeBold(self):
         self.__applyTag("bold", {"font": ("Calibri", 12, "bold")})
@@ -210,9 +178,21 @@ class Notepad:
     def __makeUnderline(self):
         self.__applyTag("underline", {"font": ("Calibri", 12, "underline")})
 
+    def __applyTag(self, tag, config):
+        self.__thisTextArea.tag_config(tag, **config)  # Apply font and other settings
+        try:
+            current_tags = self.__thisTextArea.tag_names("sel.first")
+            if tag in current_tags:
+                self.__thisTextArea.tag_remove(tag, "sel.first", "sel.last")
+            else:
+                self.__thisTextArea.tag_add(tag, "sel.first", "sel.last")
+        except:
+            pass
+    
     def run(self):
         self.__root.mainloop()
 
 # Run the application
 notepad = Notepad()
 notepad.run()
+
