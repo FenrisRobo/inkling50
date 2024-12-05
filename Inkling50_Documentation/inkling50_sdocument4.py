@@ -10,7 +10,7 @@ class Notepad:
     __root = Tk()
     __thisWidth = 600
     __thisHeight = 400
-    __thisTextArea = Text(__root, wrap=WORD, undo=True)
+    __thisTextArea = Text(__root, wrap=WORD, undo=True, font=("Calibri", 12))  # Default font
     __thisMenuBar = Menu(__root)
     __thisFileMenu = Menu(__thisMenuBar, tearoff=0)
     __thisEditMenu = Menu(__thisMenuBar, tearoff=0)
@@ -41,6 +41,11 @@ class Notepad:
         self.__createMenuBar()
         self.__createStatusBar()
         self.__root.config(menu=self.__thisMenuBar)
+
+        self.__root.bind("<Control-b>", lambda event: self.__makeBold())
+        self.__root.bind("<Control-i>", lambda event: self.__makeItalic())
+        self.__root.bind("<Control-u>", lambda event: self.__makeUnderline())
+
 
     def __createMenuBar(self):
         self.__thisFileMenu.add_command(label="New", command=self.__newFile)
@@ -92,25 +97,25 @@ class Notepad:
     def __saveAsPDF(self):
         pdf = FPDF()
         pdf.add_page()
-        pdf.set_font("Arial", size=12)
+        pdf.set_font("Calibri", size=12)
         lines = self.__thisTextArea.get(1.0, END).splitlines()
         for line in lines:
             pdf.cell(200, 10, txt=line, ln=True)
         pdf.output(self.__file)
 
     def __makeBold(self):
-        self.__applyTag("bold", {"font": ("Arial", 12, "bold")})
+        self.__applyTag("bold", {"font": ("Calibri", 12, "bold")})
 
     def __makeItalic(self):
-        self.__applyTag("italic", {"font": ("Arial", 12, "italic")})
+        self.__applyTag("italic", {"font": ("Calibri", 12, "italic")})
 
     def __makeUnderline(self):
-        self.__applyTag("underline", {"font": ("Arial", 12, "underline")})
+        self.__applyTag("underline", {"font": ("Calibri", 12, "underline")})
 
     def __changeFontSize(self):
         size = simpledialog.askinteger("Font Size", "Enter font size:", initialvalue=12)
         if size:
-            self.__applyTag("font_size", {"font": ("Arial", size)})
+            self.__applyTag("font_size", {"font": ("Calibri", size)})
 
     def __applyTag(self, tag, options):
         try:
