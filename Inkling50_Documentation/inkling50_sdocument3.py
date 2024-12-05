@@ -44,6 +44,7 @@ class Notepad:
 
     def __createMenuBar(self):
         self.__thisFileMenu.add_command(label="New", command=self.__newFile)
+        self.__thisFileMenu.add_command(label="Open", command=self.__openFile)
         self.__thisFileMenu.add_command(label="Save", command=self.__saveFile)
         self.__thisFileMenu.add_separator()
         self.__thisFileMenu.add_command(label="Exit", command=self.__quitApplication)
@@ -75,6 +76,14 @@ class Notepad:
 
     def __showAbout(self):
         showinfo("Notepad", "Enhanced Notepad with Advanced Features")
+
+    def __openFile(self):
+        self.__file = askopenfilename(filetypes=[("All Files", "*.*"), ("Text Documents", "*.txt")])
+        if self.__file:
+            self.__root.title(os.path.basename(self.__file) + " - Notepad")
+            self.__thisTextArea.delete(1.0, END)
+            with open(self.__file, "r") as file:
+                self.__thisTextArea.insert(1.0, file.read())
 
     def __newFile(self):
         self.__root.title("Untitled - Notepad")
