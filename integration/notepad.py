@@ -110,11 +110,12 @@ class Notepad(Tk):
         self.idle_timer = self.__root.after(self.idle_time_limit, lambda: self.send_to_flet("Idle expired"))
 
     def __deleteDocument(self):
-
-        # Add some comments or message here before it's deleted in Fletch
-
-        self.__thisTextArea.delete(1.0, "end")
         self.__disableTyping()
+        self.__thisTextArea.delete(1.0, "end")
+        showinfo("Time's up!", "You took too long. Press Ok to return to homepage.")
+        self.send_to_flet("End")
+        self.__root.destroy()
+        
 
     def __disableTyping(self):
         self.__thisTextArea.config(state="disabled")
@@ -162,6 +163,9 @@ class Notepad(Tk):
         underline_btn = Button(toolbar, text="U", command=self.__makeUnderline, font=("Calibri", 12, "underline"), width=3)
         underline_btn.grid(row=0, column=2, padx=5, pady=5)
 
+        savefile_btn = Button(toolbar, text="Save", command=self.__saveFile, font=("Calibri", 12, "underline"), width=3)
+        savefile_btn.grid(row=0, column=3, padx=5, pady=5)
+
         # Buttons for advanced text formatting
 
         bold_underline_btn = Button(toolbar, text="B+U", command=self.__makeBoldUnderline, font=("Calibri", 12, "bold", "underline"), width=4)
@@ -180,7 +184,7 @@ class Notepad(Tk):
 
         centerTextButton = Button(toolbar, text="Center Text", command=self.__centerText)
         centerTextButton.grid(row=0, column=7, padx=5, pady=5)
-
+        
         highlightBlackButton = Button(toolbar, text="Highlight Black", command=lambda: self.__highlightText("black"))
         highlightBlackButton.grid(row=0, column=8, padx=5, pady=5)
 

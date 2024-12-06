@@ -46,6 +46,8 @@ def start_flet(pipe):
                     msg = pipe.recv()
                     if msg == "Idle expired":
                         await start_timer()
+                    if msg == "End":
+                        page.window.close()
                 await asyncio.sleep(0.1)
         asyncio.create_task(check_pipe())
 
