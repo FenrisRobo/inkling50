@@ -105,7 +105,7 @@ class Notepad(Tk):
     def __resetIdleTimer(self):
         if self.idle_timer is not None:
             self.__root.after_cancel(self.idle_timer)
-        self.idle_timer = self.__root.after(self.idle_time_limit, self.__deleteDocument)
+        self.idle_timer = self.__root.after(self.idle_time_limit, self.send_to_flet("Idle expired"))
 
     def __deleteDocument(self):
 

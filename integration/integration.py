@@ -44,8 +44,9 @@ def start_flet(pipe):
                 if pipe.poll():
                     # Receive the message
                     msg = pipe.recv()
-                    if msg == "Timer paused":
-                        timer.value == "00 min 00 sec"
+                    if msg == "Idle expired":
+                        hint.value = "Idle expired"
+                        await start_timer()
                 await asyncio.sleep(0.5)
         asyncio.create_task(check_pipe())
 
@@ -78,7 +79,6 @@ def start_flet(pipe):
 
             send_to_tkinter("User started")
             print("User started")
-            await start_timer()
 
         async def start_timer():
             # Convert user input to int
@@ -124,7 +124,7 @@ def start_flet(pipe):
             print("Timer paused")
 
         # Set up display and stop_count variable to control pausing
-        timer = ft.Text(size = 30)
+        timer = ft.Text("__ min __ sec", size = 30)
         start_button = ft.ElevatedButton("Start", on_click =  start_writing, color = "#85A27F")
         pause_button = ft.ElevatedButton("Done!", on_click = pause_timer, color = "#85A27F", visible = False)
         instruction = ft.Text("Set a time before you can start typing!", size = 15)
