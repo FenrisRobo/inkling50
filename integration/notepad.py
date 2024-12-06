@@ -21,7 +21,7 @@ if sys.platform == "darwin":
     _tkinter.TkVersion = 8.6
     os.environ['TK_SILENCE_DEPRECATION'] = '1'
 
-class Notepad:
+class Notepad(Tk):
     def __init__(self):
         # Initialize the root window with ttkbootstrap
         self.__root = Window(themename="classic") # start with window, style it journal

@@ -30,8 +30,18 @@ def start_tkinter(pipe):
     # Send message to Flet
     def send_to_flet():
         pipe.send("Hello from Tkinter!")
+    
+    def check_pipe():
+        if pipe.poll():
+            msg = pipe.recv()
+            if msg == "Timer started":
+                notepad_window.after(500, check_pipe)
+            elif msg == "Timer paused":
+                notepad_window.__disableTyping()
+
 
     notepad_window = notepad.Notepad()
+    notepad_window.after(500, check_pipe)
     notepad_window.run()
 
 def start_flet(pipe):
@@ -70,7 +80,7 @@ def start_flet(pipe):
         for i in range(1, 60): seconds.options.append(ft.dropdown.Option(i))
         dialog = ft.AlertDialog(bgcolor = "#85A27F", title = ft.Text("Please enter a valid number for minutes (0 to 10) and seconds (1 to 59). Click outside the dialog to exit."))
 
-        def start_timer(e):
+        async def start_timer(e):
             # Buttons for testing
             start_button.visible = False
             pause_button.visible = True
@@ -90,11 +100,11 @@ def start_flet(pipe):
             while seconds_remaining and not stop_count[0]:
                 minutes_update, seconds_update = divmod(seconds_remaining, 60)
                 timer.value = "{:02d} min {:02d} sec".format(minutes_update, seconds_update)
-                time.sleep(1)
+                await asyncio.sleep(1)
                 seconds_remaining -= 1
                 page.update()
 
-            time.sleep(1)
+            await asyncio.sleep(1)
             timer.value = "{:02d} min {:02d} sec".format(minutes_value, seconds_value)
             start_button.visible = True
             pause_button.visible = False
@@ -119,9 +129,10 @@ def start_flet(pipe):
         stop_count = [False]
 
         # Add controls to page
-        page.add(ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)"), ft.Container(padding = 5), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 5), timer, ft.Container(padding = 5)) 
+        page.add(ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)"), ft.Container(padding = 5), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 5), timer, ft.Container(padding = 5))
 
     ft.app(target=main)
+
 
 if __name__ == "__main__":
     # Use a Pipe for inter-process communication
