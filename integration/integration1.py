@@ -131,51 +131,48 @@ class Notepad:
         underline_btn = Button(toolbar, text="U", command=self.__makeUnderline, font=("Calibri", 12, "underline"), width=3)
         underline_btn.grid(row=0, column=2, padx=5, pady=5)
 
-        savefile_btn = Button(toolbar, text="SF", command=self.__saveFile, font=("Calibri", 12, "underline"), width=3)
-        savefile_btn.grid(row=0, column=3, padx=5, pady=5)
-
         # Buttons for advanced text formatting
 
         bold_underline_btn = Button(toolbar, text="B+U", command=self.__makeBoldUnderline, font=("Calibri", 12, "bold", "underline"), width=4)
-        bold_underline_btn.grid(row=0, column=4, padx=5, pady=5)
+        bold_underline_btn.grid(row=0, column=3, padx=5, pady=5)
 
         italic_underline_btn = Button(toolbar, text="I+U", command=self.__makeItalicUnderline, font=("Calibri", 12, "italic", "underline"), width=4)
-        italic_underline_btn.grid(row=0, column=5, padx=5, pady=5)
+        italic_underline_btn.grid(row=0, column=4, padx=5, pady=5)
 
         bold_italic_btn = Button(toolbar, text="B+I", command=self.__makeBoldItalic, font=("Calibri", 12, "bold", "italic"), width=4)
-        bold_italic_btn.grid(row=0, column=6, padx=5, pady=5)
+        bold_italic_btn.grid(row=0, column=5, padx=5, pady=5)
 
         bold_italic_underline_btn = Button(toolbar, text="B+I+U", command=self.__makeBoldItalicUnderline, font=("Calibri", 12, "bold", "italic", "underline"), width=5)
-        bold_italic_underline_btn.grid(row=0, column=7, padx=5, pady=5)
+        bold_italic_underline_btn.grid(row=0, column=6, padx=5, pady=5)
 
         # Buttons for center text, highlight, and text color
 
         centerTextButton = Button(toolbar, text="Center Text", command=self.__centerText)
-        centerTextButton.grid(row=0, column=8, padx=5, pady=5)
+        centerTextButton.grid(row=0, column=7, padx=5, pady=5)
 
         highlightBlackButton = Button(toolbar, text="Highlight Black", command=lambda: self.__highlightText("black"))
-        highlightBlackButton.grid(row=0, column=9, padx=5, pady=5)
+        highlightBlackButton.grid(row=0, column=8, padx=5, pady=5)
 
         highlightBlueButton = Button(toolbar, text="Highlight Blue", command=lambda: self.__highlightText("blue"))
-        highlightBlueButton.grid(row=0, column=10, padx=5, pady=5)
+        highlightBlueButton.grid(row=0, column=9, padx=5, pady=5)
 
         highlightRedButton = Button(toolbar, text="Highlight Red", command=lambda: self.__highlightText("red"))
-        highlightRedButton.grid(row=0, column=11, padx=5, pady=5)
+        highlightRedButton.grid(row=0, column=10, padx=5, pady=5)
 
         highlightGreenButton = Button(toolbar, text="Highlight Green", command=lambda: self.__highlightText("green"))
-        highlightGreenButton.grid(row=0, column=12, padx=5, pady=5)
+        highlightGreenButton.grid(row=0, column=11, padx=5, pady=5)
 
         textColorBlackButton = Button(toolbar, text="Text Black", command=lambda: self.__changeTextColor("black"))
-        textColorBlackButton.grid(row=0, column=13, padx=5, pady=5)
+        textColorBlackButton.grid(row=0, column=12, padx=5, pady=5)
 
         textColorBlueButton = Button(toolbar, text="Text Blue", command=lambda: self.__changeTextColor("blue"))
-        textColorBlueButton.grid(row=0, column=14, padx=5, pady=5)
+        textColorBlueButton.grid(row=0, column=13, padx=5, pady=5)
 
         textColorRedButton = Button(toolbar, text="Text Red", command=lambda: self.__changeTextColor("red"))
-        textColorRedButton.grid(row=0, column=15, padx=5, pady=5)
+        textColorRedButton.grid(row=0, column=14, padx=5, pady=5)
 
         textColorGreenButton = Button(toolbar, text="Text Green", command=lambda: self.__changeTextColor("green"))
-        textColorGreenButton.grid(row=0, column=16, padx=5, pady=5)
+        textColorGreenButton.grid(row=0, column=15, padx=5, pady=5)
 
 
     def __createStatusBar(self):
@@ -312,7 +309,7 @@ def start_flet(pipe):
     # Send message to Tkinter
     def send_to_tkinter(message):
         pipe.send(message)
-    
+
     async def check_pipe():
         while True:
             # Check if there's a message
@@ -322,78 +319,61 @@ def start_flet(pipe):
             await asyncio.sleep(0.5)
 
     async def main(page: ft.Page):
-
         # Add a Timer to periodically check the pipe
         asyncio.create_task(check_pipe())
 
-        """Implement timer"""
         # Page formatting
-        page.theme_mode = ft.ThemeMode.SYSTEM
-        page.window.center()
+        page.title = "Timer-Integrated Notepad"
         page.horizontal_alignment = "center"
         page.vertical_alignment = "center"
-        page.padding = 40
-        page.window.frameless = True
-        page.window.always_on_top = True
-        page.window.height = 300
-        page.window.width = 425
 
-        minutes = ft.Dropdown(label = "Minutes", hint_text = "0 to 10", width = "125")
-        for i in range(11): minutes.options.append(ft.dropdown.Option(i))
-        seconds = ft.Dropdown(label = "Seconds", hint_text = "1 to 59", width = "125")
-        for i in range(1, 60): seconds.options.append(ft.dropdown.Option(i))
-        dialog = ft.AlertDialog(bgcolor = "#85A27F", title = ft.Text("Please enter a valid number for minutes (0 to 10) and seconds (1 to 59). Click outside the dialog to exit."))
+        # Create Timer UI
+        timer_text = ft.Text(value="Time Left: 00:30", size=20, weight="bold")
+        timer_duration = 30  # Timer duration in seconds
+        notepad_locked = False
 
-        def start_timer(e):
-            # Buttons for testing
-            start_button.visible = False
-            pause_button.visible = True
-
-            # Convert user input to int
-            try:
-                minutes_value = int(minutes.value)
-                seconds_value = int(seconds.value)
-            except:
-                page.open(dialog)
-                return
-
-            # Calculate seconds remaining and start countdown
-            seconds_remaining = (minutes_value * 60) + seconds_value
-            send_to_tkinter("Timer started")
-
-            while seconds_remaining and not stop_count[0]:
-                minutes_update, seconds_update = divmod(seconds_remaining, 60)
-                timer.value = "{:02d} min {:02d} sec".format(minutes_update, seconds_update)
-                time.sleep(1)
-                seconds_remaining -= 1
+        # Timer functionality
+        def update_timer():
+            nonlocal timer_duration, notepad_locked
+            if timer_duration > 0:
+                timer_duration -= 1
+                minutes, seconds = divmod(timer_duration, 60)
+                timer_text.value = f"Time Left: {minutes:02}:{seconds:02}"
+                page.update()
+            else:
+                # Lock the text area once time is up
+                notepad_locked = True
+                notepad_area.disabled = True
+                timer.stop()
+                page.snack_bar = ft.SnackBar(ft.Text("Time's up! Editing disabled."), open=True)
                 page.update()
 
-            time.sleep(1)
-            timer.value = "{:02d} min {:02d} sec".format(minutes_value, seconds_value)
-            start_button.visible = True
-            pause_button.visible = False
-            page.update()
-        
-        # Pause the timer
-        def pause_timer(e):
-            send_to_tkinter("Timer paused")
+        # Initialize the Flet timer
+        timer = Timer(1, update_timer)
 
-            if stop_count[0] == True:
-                stop_count[0] = False
-            else:
-                stop_count[0] = True
-                start_button.visible = True
-                start_button.disabled = False
-                pause_button.visible = False
+        # Start the timer
+        timer.start()
 
-        # Set up display and stop_count variable to control pausing
-        timer = ft.Text(size = 30)
-        start_button = ft.ElevatedButton("Start", on_click =  start_timer, color = "#85A27F")
-        pause_button = ft.ElevatedButton("Done!", on_click = pause_timer, color = "#85A27F", visible = False)
-        stop_count = [False]
+        # Create a notepad text area
+        notepad_area = ft.TextArea(
+            label="Notepad",
+            multiline=True,
+            expand=True,
+            disabled=notepad_locked,  # Disable based on timer
+        )
 
-        # Add controls to page
-        page.add(ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)"), ft.Container(padding = 5), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 5), timer, ft.Container(padding = 5)) 
+        # Add elements to the page
+        page.add(
+            ft.Column(
+                [
+                    timer_text,
+                    notepad_area,
+                ],
+                alignment="center",
+                expand=True,
+                spacing=20,
+            )
+        )
 
     ft.app(target=main)
 
