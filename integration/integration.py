@@ -45,9 +45,8 @@ def start_flet(pipe):
                     # Receive the message
                     msg = pipe.recv()
                     if msg == "Idle expired":
-                        hint.value = "Idle expired"
                         await start_timer()
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(0.1)
         asyncio.create_task(check_pipe())
 
         """Implement timer"""
@@ -74,7 +73,7 @@ def start_flet(pipe):
             pause_button.visible = True
 
             instruction.value = "Type away! :)"
-            hint.value = "Only press done when you're finished or your document will lock"
+            hint.value = "The timer will begin after 5 minutes of inactivity. Only press done when you're finished or your document will lock"
             page.update()
 
             send_to_tkinter("User started")
