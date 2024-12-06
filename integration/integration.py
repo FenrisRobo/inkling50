@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import os
 import ttkbootstrap
@@ -306,19 +307,21 @@ def start_tkinter(pipe):
 def start_flet(pipe):
     """Flet app function."""
     # Send message to Tkinter
-    def send_to_tkinter(message, e):
+    def send_to_tkinter(message):
         pipe.send(message)
-
-    def main(page: ft.Page):
-        def check_pipe():
+    
+    async def check_pipe():
+        while True:
             # Check if there's a message
             if pipe.poll():
                 # Receive the message
                 msg = pipe.recv()
+            await asyncio.sleep(0.5)
+
+    async def main(page: ft.Page):
 
         # Add a Timer to periodically check the pipe
-        page.add(Timer(name = "timer", interval_s = 0.5, callback = check_pipe))  # Check every 0.5 seconds
-        page.update()
+        asyncio.create_task(check_pipe())
 
         """Implement timer"""
         # Page formatting
