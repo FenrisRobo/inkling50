@@ -2,6 +2,7 @@
 import sys
 import os
 import ttkbootstrap
+import platform
 import flet as ft
 import tkinter as tk
 import tkinter.font as tkFont
@@ -68,6 +69,8 @@ class Notepad:
         # Disable copy-paste key bindings
         self.__thisTextArea.bind("<Control-c>", self.__disableAction)
         self.__thisTextArea.bind("<Control-v>", self.__disableAction)
+        self.__thisTextArea.bind("<Command-c>", self.__disableAction)  # macOS Copy
+        self.__thisTextArea.bind("<Command-v>", self.__disableAction)  # macOS Paste
 
     def __onKeyPress(self, event):
         self.__resetIdleTimer()
