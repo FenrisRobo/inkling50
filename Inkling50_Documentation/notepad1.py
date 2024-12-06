@@ -16,6 +16,10 @@ from threading import Timer # For calling the timer function
 # import fpdf so user can save file as a pdf, though this will be done automatically later on
 from fpdf import FPDF  # For saving files as PDF
 
+if sys.platform == "darwin":
+    from tkinter import _tkinter
+    _tkinter.TkVersion = 8.6
+    os.environ['TK_SILENCE_DEPRECATION'] = '1'
 
 class Notepad:
     def __init__(self):
