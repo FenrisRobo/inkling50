@@ -53,11 +53,11 @@ def main(page: ft.Page) -> None:
 
         if stop_count[0] == True:
             stop_count[0] = False
+        else:
+            stop_count[0] = True
             start_button.visible = True
             start_button.disabled = False
             pause_button.visible = False
-        else:
-            stop_count[0] = True
 
     # Set up display and stop_count variable to control pausing
     timer = ft.Text(size = 30)
