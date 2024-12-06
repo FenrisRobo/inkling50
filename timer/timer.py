@@ -4,12 +4,14 @@ import time
 def main(page: ft.Page) -> None:
     # Page formatting
     page.theme_mode = ft.ThemeMode.SYSTEM
+    page.window.center()
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
     page.padding = 40
-    page.window_frameless = True
-    page.window_height = 300
-    page.window_width = 425
+    page.window.frameless = True
+    page.window.always_on_top = True
+    page.window.height = 300
+    page.window.width = 425
 
     minutes = ft.Dropdown(label = "Minutes", hint_text = "0 to 10", width = "125")
     for i in range(11): minutes.options.append(ft.dropdown.Option(i))
@@ -58,12 +60,12 @@ def main(page: ft.Page) -> None:
             stop_count[0] = True
 
     # Set up display and stop_count variable to control pausing
-    timer = ft.Text(style = "displaySmall", color = "white")
+    timer = ft.Text(size = 30)
     start_button = ft.ElevatedButton("Start", on_click =  start_timer, color = "#85A27F")
-    pause_button = ft.ElevatedButton("Pause", on_click = pause_timer, color = "#85A27F", visible = False)
+    pause_button = ft.ElevatedButton("Done!", on_click = pause_timer, color = "#85A27F", visible = False)
     stop_count = [False]
 
     # Add controls to page
-    page.add(ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)"), ft.Container(padding = 5), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 5), timer, ft.Container(padding = 5))
+    page.add(ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)"), ft.Container(padding = 5), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 5), timer, ft.Container(padding = 5)) 
 
-ft.app(main)
+ft.app(target = main)
