@@ -6,6 +6,7 @@ import platform
 import flet as ft
 import tkinter as tk
 import tkinter.font as tkFont
+import ctypes
 from tkinter import *
 from ttkbootstrap import Window, Style
 from ttkbootstrap.constants import *
@@ -16,18 +17,21 @@ from threading import Timer # For calling the timer function
 # import fpdf so user can save file as a pdf, though this will be done automatically later on
 from fpdf import FPDF  # For saving files as PDF
 
-# Create the Notepad class
+if sys.platform == "darwin":
+    from tkinter import _tkinter
+    _tkinter.TkVersion = 8.6
+    os.environ['TK_SILENCE_DEPRECATION'] = '1'
 
 class Notepad:
     def __init__(self):
         # Initialize the root window with ttkbootstrap
-        self.__root = Window(themename="journal") # start with window, style it journal
+        self.__root = Window(themename="classic") # start with window, style it journal
         self.__root.title("Notepad") # title the window notepad
         self.__root.geometry("800x600")  # Default size
 
         # Set up text area with default font
         self.__thisTextArea = Text(self.__root, wrap=WORD, undo=True, font=("Calibri", 12))
-        self.__file = None # Set self.__file to currently none 
+        self.__file = None 
 
         # Create menu bar and status bar
         self.__thisMenuBar = Menu(self.__root) # Create new root to menu function from tkinter library
