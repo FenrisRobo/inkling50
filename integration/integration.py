@@ -40,7 +40,6 @@ def start_flet(pipe):
     def send_to_tkinter(message):
         pipe.send(message)
 
-
     async def main(page: ft.Page):
         # Add a Timer to periodically check the pipe
         async def check_pipe():
@@ -110,9 +109,9 @@ def start_flet(pipe):
         
         # Pause the timer
         def pause_timer(e):
-            stop_count[0] = not stop_count[0]
             start_button.visible = False
             pause_button.visible = False
+            stop_count[0] = not stop_count[0]
             send_to_tkinter("Timer paused")
             print("Timer paused")
 
@@ -138,7 +137,9 @@ if __name__ == "__main__":
     tk_process = multiprocessing.Process(target=start_tkinter, args=(parent_conn,))
     tk_process.start()
 
-    # Run Flet in the main thread
-    start_flet(child_conn)
-
-    tk_process.join()
+    try:
+        # Run Flet in the main thread
+        start_flet(child_conn)
+    finally:
+        tk_process.terminate()
+        tk_process.join()

@@ -25,6 +25,7 @@ class Notepad(Tk):
     def __init__(self, pipe):
         super().__init__()
         self.pipe = pipe
+        self.running = True
 
         # Initialize the root window with ttkbootstrap
         self.__root = Window(themename="classic") # start with window, style it journal
@@ -57,16 +58,19 @@ class Notepad(Tk):
         self.idle_time_limit = 5000  # milliseconds
         self.idle_timer = None
 
-        self.after(100, self.check_pipe)
+        self.check_pipe_id = self.after(100, self.check_pipe)
 
         # Bind events
         self.__bindEvents()
     
     def check_pipe(self):
+        if not self.running:
+            return
+        
         if self.pipe.poll():
             msg = self.pipe.recv()
             print("1 {msg}")
-            if msg == "Not started" or "Timer paused":
+            if msg in ["Not started", "Timer paused"]:
                 self.__disableTyping()
                 pass
             elif msg == "User started":
@@ -94,6 +98,7 @@ class Notepad(Tk):
     def __onKeyPress(self, event):
         self.__resetIdleTimer()
 
+    
     def __resetIdleTimer(self):
         if self.idle_timer is not None:
             self.__root.after_cancel(self.idle_timer)
@@ -213,8 +218,10 @@ class Notepad(Tk):
         pass  # Adjust layout as needed here
 
     def __quitApplication(self):
-        if self.timer:
-            self.timer.cancel()  # Cancel the idle timer thread
+        if self.idle_timer is not None:
+            self.__root.after_cancel(self.idle_timer)  # Cancel the idle timer thread
+        self.__root.after_cancel(self.check_pipe_id)
+        self.running = False
         self.__root.destroy()
 
     def __showAbout(self):
