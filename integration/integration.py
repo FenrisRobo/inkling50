@@ -108,6 +108,7 @@ def start_flet(pipe):
                 else:
                     break
             timer.value = "00 min 00 sec"
+            send_to_tkinter("Timer expired")
         
         # Pause the timer
         def pause_timer(e):

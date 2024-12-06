@@ -79,6 +79,8 @@ class Notepad(Tk):
                 pass
             elif msg == "User started":
                 self.__enableTyping()
+            elif msg == "Timer expired":
+                self.__deleteDocument()
         self.after(100, self.check_pipe)
 
     def run(self):
