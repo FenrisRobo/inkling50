@@ -27,10 +27,6 @@ if sys.platform == "darwin":
 def start_tkinter(pipe):
     """Tkinter app function (main notepad)"""
 
-    # Send message to Flet
-    def send_to_flet():
-        pipe.send("Hello from Tkinter!")
-
     notepad_window = notepad.Notepad(pipe)
     notepad_window.run()
 
@@ -62,7 +58,7 @@ def start_flet(pipe):
         page.padding = 40
         page.window.frameless = True
         page.window.always_on_top = True
-        page.window.height = 300
+        page.window.height = 350
         page.window.width = 425
 
         minutes = ft.Dropdown(label = "Minutes", hint_text = "0 to 10", width = "125")
@@ -76,6 +72,10 @@ def start_flet(pipe):
             start_button.visible = False
             pause_button.visible = True
 
+            instruction.value = "Type away! :)"
+            hint.value = "Only press done when you're finished or your document will lock"
+            page.update()
+
             send_to_tkinter("User started")
             print("User started")
             await start_timer()
@@ -88,6 +88,9 @@ def start_flet(pipe):
             except:
                 page.open(dialog)
                 return
+            
+            instruction.value = "Timer started! Continue typing or you'll lose your work..."
+            page.update()
 
             send_to_tkinter("Timer started")
             print("Timer started")
@@ -112,6 +115,11 @@ def start_flet(pipe):
             start_button.visible = False
             pause_button.visible = False
             stop_count[0] = not stop_count[0]
+
+            instruction.value = "Timer paused. You can no longer edit. Make sure to save!"
+            hint.value = "Congrats! ...Did you actually finish it?"
+            page.update()
+
             send_to_tkinter("Timer paused")
             print("Timer paused")
 
@@ -119,10 +127,12 @@ def start_flet(pipe):
         timer = ft.Text(size = 30)
         start_button = ft.ElevatedButton("Start", on_click =  start_writing, color = "#85A27F")
         pause_button = ft.ElevatedButton("Done!", on_click = pause_timer, color = "#85A27F", visible = False)
+        instruction = ft.Text("Set a time before you can start typing!", size = 15)
+        hint = ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)")
         stop_count = [False]
 
         # Add controls to page
-        page.add(ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)"), ft.Container(padding = 5), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 5), timer, ft.Container(padding = 5))
+        page.add(instruction, ft.Container(padding = 2), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 2), timer, ft.Container(padding = 1), hint, ft.Container(padding = 2))
         send_to_tkinter("Not started")
         print("Not started")
 
