@@ -63,6 +63,7 @@ def start_flet(pipe):
 
         minutes = ft.Dropdown(label = "Minutes", hint_text = "0 to 10", width = "125")
         for i in range(11): minutes.options.append(ft.dropdown.Option(i))
+        minutes.value = 0
         seconds = ft.Dropdown(label = "Seconds", hint_text = "1 to 59", width = "125")
         for i in range(1, 60): seconds.options.append(ft.dropdown.Option(i))
         dialog = ft.AlertDialog(bgcolor = "#85A27F", title = ft.Text("Please enter a valid number for minutes (0 to 10) and seconds (1 to 59). Click outside the dialog to exit."))
@@ -73,7 +74,7 @@ def start_flet(pipe):
             pause_button.visible = True
 
             instruction.value = "Type away! :)"
-            hint.value = "The timer will begin after 5 minutes of inactivity. Only press done when you're finished or your document will lock"
+            hint.value = "The timer will begin after 5 seconds of inactivity. Only press done when you're finished or your document will lock"
             page.update()
 
             send_to_tkinter("User started")
