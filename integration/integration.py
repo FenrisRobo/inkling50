@@ -72,11 +72,16 @@ def start_flet(pipe):
         for i in range(1, 60): seconds.options.append(ft.dropdown.Option(i))
         dialog = ft.AlertDialog(bgcolor = "#85A27F", title = ft.Text("Please enter a valid number for minutes (0 to 10) and seconds (1 to 59). Click outside the dialog to exit."))
 
-        async def start_timer(e):
+        async def start_writing(e):
             # Buttons for testing
             start_button.visible = False
             pause_button.visible = True
 
+            send_to_tkinter("User started")
+            print("User started")
+            await start_timer()
+
+        async def start_timer():
             # Convert user input to int
             try:
                 minutes_value = int(minutes.value)
@@ -86,6 +91,7 @@ def start_flet(pipe):
                 return
 
             send_to_tkinter("Timer started")
+            print("Timer started")
             await update_timer(minutes_value, seconds_value)
 
         async def update_timer(minutes_value, seconds_value):
@@ -105,19 +111,21 @@ def start_flet(pipe):
         # Pause the timer
         def pause_timer(e):
             stop_count[0] = not stop_count[0]
-            send_to_tkinter("Timer paused")
             start_button.visible = False
             pause_button.visible = False
+            send_to_tkinter("Timer paused")
+            print("Timer paused")
 
         # Set up display and stop_count variable to control pausing
         timer = ft.Text(size = 30)
-        start_button = ft.ElevatedButton("Start", on_click =  start_timer, color = "#85A27F")
+        start_button = ft.ElevatedButton("Start", on_click =  start_writing, color = "#85A27F")
         pause_button = ft.ElevatedButton("Done!", on_click = pause_timer, color = "#85A27F", visible = False)
         stop_count = [False]
 
         # Add controls to page
         page.add(ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)"), ft.Container(padding = 5), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 5), timer, ft.Container(padding = 5))
         send_to_tkinter("Not started")
+        print("Not started")
 
     ft.app(target=main)
 
@@ -127,10 +135,10 @@ if __name__ == "__main__":
     parent_conn, child_conn = multiprocessing.Pipe()
 
     # Start Tkinter in a subthread
-    tk_process = multiprocessing.Process(target=start_tkinter, args=(child_conn,))
+    tk_process = multiprocessing.Process(target=start_tkinter, args=(parent_conn,))
     tk_process.start()
 
     # Run Flet in the main thread
-    start_flet(parent_conn)
+    start_flet(child_conn)
 
     tk_process.join()

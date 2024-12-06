@@ -57,7 +57,7 @@ class Notepad(Tk):
         self.idle_time_limit = 5000  # milliseconds
         self.idle_timer = None
 
-        self.after(500, self.check_pipe)
+        self.after(100, self.check_pipe)
 
         # Bind events
         self.__bindEvents()
@@ -65,21 +65,20 @@ class Notepad(Tk):
     def check_pipe(self):
         if self.pipe.poll():
             msg = self.pipe.recv()
-            if msg == "Timer started":
-                pass
-            elif msg == "Timer paused":
-                self.__statusBar.config(text=msg)
+            print("1 {msg}")
+            if msg == "Not started" or "Timer paused":
                 self.__disableTyping()
-            elif msg == "Reset":
+                pass
+            elif msg == "User started":
                 self.__enableTyping()
-        self.after(500, self.check_pipe)
+        self.after(100, self.check_pipe)
 
     def run(self):
         """Run the main application loop."""
         self.__root.mainloop()
 
     def __bindEvents(self):
-        #self.__root.bind("<Key>", self.__onKeyPress)
+        self.__root.bind("<Key>", self.__onKeyPress)
         self.__root.bind("<Configure>", self.__adjustSize)
         self.__root.bind("<Control-b>", lambda event: self.__makeBold())
         self.__root.bind("<Control-i>", lambda event: self.__makeItalic())
@@ -92,7 +91,6 @@ class Notepad(Tk):
         self.__thisTextArea.bind("<Command-c>", self.__disableAction)  # macOS Copy
         self.__thisTextArea.bind("<Command-v>", self.__disableAction)  # macOS Paste
 
-    """
     def __onKeyPress(self, event):
         self.__resetIdleTimer()
 
@@ -107,7 +105,6 @@ class Notepad(Tk):
 
         self.__thisTextArea.delete(1.0, "end")
         self.__disableTyping()
-    """
 
     def __disableTyping(self):
         self.__thisTextArea.config(state="disabled")
