@@ -13,6 +13,7 @@ from threading import Timer # For calling the timer function
 # import fpdf so user can save file as a pdf, though this will be done automatically later on
 from fpdf import FPDF  # For saving files as PDF
 
+# Create the Notepad class
 
 class Notepad:
     def __init__(self):
@@ -23,11 +24,11 @@ class Notepad:
 
         # Set up text area with default font
         self.__thisTextArea = Text(self.__root, wrap=WORD, undo=True, font=("Calibri", 12))
-        self.__file = None 
+        self.__file = None # Set self.__file to currently none 
 
         # Create menu bar and status bar
-        self.__thisMenuBar = Menu(self.__root)
-        self.__createMenuBar()
+        self.__thisMenuBar = Menu(self.__root) # Create new root to menu function from tkinter library
+        self.__createMenuBar() # Create new function later on 
         self.__createStatusBar()
 
         # Toolbar setup
