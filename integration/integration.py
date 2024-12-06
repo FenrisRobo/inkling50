@@ -144,3 +144,5 @@ if __name__ == "__main__":
 
     # Run Flet in the main thread
     start_flet(parent_conn)
+
+    tk_process.join()
