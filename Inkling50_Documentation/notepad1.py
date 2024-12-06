@@ -52,7 +52,7 @@ class Notepad:
         self.__root.grid_columnconfigure(1, weight=1)
 
         # Idle timer setup
-        self.idle_time_limit = 20000  # milliseconds
+        self.idle_time_limit = 5000  # milliseconds
         self.idle_timer = None
 
         # Bind events
@@ -89,6 +89,10 @@ class Notepad:
         # Add some comments or message here before it's deleted in Fletch
 
         self.__thisTextArea.delete(1.0, "end")
+        self.__disableTyping()
+
+    def __disableTyping(self):
+        self.__thisTextArea.config(state="disabled")
 
     def __createMenuBar(self):
         file_menu = Menu(self.__thisMenuBar, tearoff=0)
