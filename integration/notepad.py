@@ -75,13 +75,16 @@ class Notepad(Tk):
         if self.pipe.poll():
             msg = self.pipe.recv()
             print("1 {msg}")
-            if msg in ["Not started", "Timer paused"]:
+            if msg == "Not started":
                 self.__disableTyping()
                 pass
             elif msg == "User started":
                 self.__enableTyping()
             elif msg == "Timer expired":
                 self.__deleteDocument()
+            elif msg == "Done":
+                self.__disableTyping()
+                self.__saveFile()
         self.after(100, self.check_pipe)
 
     def run(self):

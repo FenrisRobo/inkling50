@@ -133,8 +133,8 @@ def start_flet(pipe):
             hint.value = "Congrats! ...Did you actually finish it?"
             page.update()
 
-            send_to_tkinter("Timer paused")
-            print("Timer paused")
+            send_to_tkinter("Done")
+            print("Done")
 
         # Set up display and stop_count variable to control pausing
         timer = ft.Text("__ min __ sec", size = 30)
