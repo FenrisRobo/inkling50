@@ -30,18 +30,8 @@ def start_tkinter(pipe):
     # Send message to Flet
     def send_to_flet():
         pipe.send("Hello from Tkinter!")
-    
-    def check_pipe():
-        if pipe.poll():
-            msg = pipe.recv()
-            if msg == "Timer started":
-                notepad_window.after(500, check_pipe)
-            elif msg == "Timer paused":
-                notepad_window.__disableTyping()
 
-
-    notepad_window = notepad.Notepad()
-    notepad_window.after(500, check_pipe)
+    notepad_window = notepad.Notepad(pipe)
     notepad_window.run()
 
 def start_flet(pipe):
@@ -49,17 +39,19 @@ def start_flet(pipe):
     # Send message to Tkinter
     def send_to_tkinter(message):
         pipe.send(message)
-    
-    async def check_pipe():
-        while True:
-            # Check if there's a message
-            if pipe.poll():
-                # Receive the message
-                msg = pipe.recv()
-            await asyncio.sleep(0.5)
+
 
     async def main(page: ft.Page):
         # Add a Timer to periodically check the pipe
+        async def check_pipe():
+            while True:
+                # Check if there's a message
+                if pipe.poll():
+                    # Receive the message
+                    msg = pipe.recv()
+                    if msg == "Timer paused":
+                        timer.value == "00 min 00 sec"
+                await asyncio.sleep(0.5)
         asyncio.create_task(check_pipe())
 
         """Implement timer"""
@@ -93,34 +85,29 @@ def start_flet(pipe):
                 page.open(dialog)
                 return
 
-            # Calculate seconds remaining and start countdown
-            seconds_remaining = (minutes_value * 60) + seconds_value
             send_to_tkinter("Timer started")
+            await update_timer(minutes_value, seconds_value)
 
-            while seconds_remaining and not stop_count[0]:
-                minutes_update, seconds_update = divmod(seconds_remaining, 60)
-                timer.value = "{:02d} min {:02d} sec".format(minutes_update, seconds_update)
-                await asyncio.sleep(1)
-                seconds_remaining -= 1
-                page.update()
+        async def update_timer(minutes_value, seconds_value):
+            # Calculate seconds remaining and start countdown
+            total_seconds = (minutes_value * 60) + seconds_value
 
-            await asyncio.sleep(1)
-            timer.value = "{:02d} min {:02d} sec".format(minutes_value, seconds_value)
-            start_button.visible = True
-            pause_button.visible = False
-            page.update()
+            for remaining in range(total_seconds, -1, -1):
+                if not stop_count[0]:
+                    minutes_update, seconds_update = divmod(remaining, 60)
+                    timer.value = "{:02d} min {:02d} sec".format(minutes_update, seconds_update)
+                    page.update()
+                    await asyncio.sleep(1)
+                else:
+                    break
+            timer.value = "00 min 00 sec"
         
         # Pause the timer
         def pause_timer(e):
+            stop_count[0] = not stop_count[0]
             send_to_tkinter("Timer paused")
-
-            if stop_count[0] == True:
-                stop_count[0] = False
-            else:
-                stop_count[0] = True
-                start_button.visible = True
-                start_button.disabled = False
-                pause_button.visible = False
+            start_button.visible = False
+            pause_button.visible = False
 
         # Set up display and stop_count variable to control pausing
         timer = ft.Text(size = 30)
@@ -130,6 +117,7 @@ def start_flet(pipe):
 
         # Add controls to page
         page.add(ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)"), ft.Container(padding = 5), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 5), timer, ft.Container(padding = 5))
+        send_to_tkinter("Not started")
 
     ft.app(target=main)
 

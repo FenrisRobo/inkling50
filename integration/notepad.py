@@ -22,7 +22,10 @@ if sys.platform == "darwin":
     os.environ['TK_SILENCE_DEPRECATION'] = '1'
 
 class Notepad(Tk):
-    def __init__(self):
+    def __init__(self, pipe):
+        super().__init__()
+        self.pipe = pipe
+
         # Initialize the root window with ttkbootstrap
         self.__root = Window(themename="classic") # start with window, style it journal
         self.__root.title("Notepad") # title the window notepad
@@ -54,15 +57,29 @@ class Notepad(Tk):
         self.idle_time_limit = 5000  # milliseconds
         self.idle_timer = None
 
+        self.after(500, self.check_pipe)
+
         # Bind events
         self.__bindEvents()
+    
+    def check_pipe(self):
+        if self.pipe.poll():
+            msg = self.pipe.recv()
+            if msg == "Timer started":
+                pass
+            elif msg == "Timer paused":
+                self.__statusBar.config(text=msg)
+                self.__disableTyping()
+            elif msg == "Reset":
+                self.__enableTyping()
+        self.after(500, self.check_pipe)
 
     def run(self):
         """Run the main application loop."""
         self.__root.mainloop()
 
     def __bindEvents(self):
-        self.__root.bind("<Key>", self.__onKeyPress)
+        #self.__root.bind("<Key>", self.__onKeyPress)
         self.__root.bind("<Configure>", self.__adjustSize)
         self.__root.bind("<Control-b>", lambda event: self.__makeBold())
         self.__root.bind("<Control-i>", lambda event: self.__makeItalic())
@@ -75,6 +92,7 @@ class Notepad(Tk):
         self.__thisTextArea.bind("<Command-c>", self.__disableAction)  # macOS Copy
         self.__thisTextArea.bind("<Command-v>", self.__disableAction)  # macOS Paste
 
+    """
     def __onKeyPress(self, event):
         self.__resetIdleTimer()
 
@@ -89,9 +107,13 @@ class Notepad(Tk):
 
         self.__thisTextArea.delete(1.0, "end")
         self.__disableTyping()
+    """
 
     def __disableTyping(self):
         self.__thisTextArea.config(state="disabled")
+    
+    def __enableTyping(self):
+        self.__thisTextArea.config(state="normal")
 
     def __createMenuBar(self):
         file_menu = Menu(self.__thisMenuBar, tearoff=0)
