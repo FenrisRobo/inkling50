@@ -57,6 +57,7 @@ class Notepad(Tk):
         # Idle timer setup
         self.idle_time_limit = 5000  # milliseconds
         self.idle_timer = None
+        self.expired_idle = False
 
         self.check_pipe_id = self.after(100, self.check_pipe)
 
@@ -102,12 +103,21 @@ class Notepad(Tk):
         self.__thisTextArea.bind("<Command-v>", self.__disableAction)  # macOS Paste
 
     def __onKeyPress(self, event):
+        if self.expired_idle:
+            self.send_to_flet("Reset Timer")
+            self.expired_idle = False
         self.__resetIdleTimer()
 
     def __resetIdleTimer(self):
         if self.idle_timer is not None:
             self.__root.after_cancel(self.idle_timer)
-        self.idle_timer = self.__root.after(self.idle_time_limit, lambda: self.send_to_flet("Idle expired"))
+            self.idle_timer = None
+        self.idle_timer = self.__root.after(self.idle_time_limit, self.__expiredIdle)
+    
+    def __expiredIdle(self):
+        self.expired_idle = True
+        self.idle_timer = None
+        self.send_to_flet("Idle expired")
 
     def __deleteDocument(self):
         self.__disableTyping()
@@ -116,7 +126,6 @@ class Notepad(Tk):
         self.send_to_flet("End")
         self.__root.destroy()
         
-
     def __disableTyping(self):
         self.__thisTextArea.config(state="disabled")
     

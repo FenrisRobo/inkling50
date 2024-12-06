@@ -46,7 +46,9 @@ def start_flet(pipe):
                     msg = pipe.recv()
                     if msg == "Idle expired":
                         await start_timer()
-                    if msg == "End":
+                    elif msg == "Timer Reset":
+                        reset_timer()
+                    elif msg == "End":
                         page.window.close()
                 await asyncio.sleep(0.1)
         asyncio.create_task(check_pipe())
@@ -101,6 +103,7 @@ def start_flet(pipe):
         async def update_timer(minutes_value, seconds_value):
             # Calculate seconds remaining and start countdown
             total_seconds = (minutes_value * 60) + seconds_value
+            stop_count[0] = False
 
             for remaining in range(total_seconds, -1, -1):
                 if not stop_count[0]:
@@ -110,14 +113,21 @@ def start_flet(pipe):
                     await asyncio.sleep(1)
                 else:
                     break
-            timer.value = "00 min 00 sec"
-            send_to_tkinter("Timer expired")
+            if not stop_count[0]:
+                timer.value = "00 min 00 sec"
+                send_to_tkinter("Timer expired")
         
+        def reset_timer():
+            stop_count[0] = True
+            timer.value = "__ min __ sec"
+            page.update()
+            print("Timer reset - flet")
+
         # Pause the timer
         def pause_timer(e):
             start_button.visible = False
             pause_button.visible = False
-            stop_count[0] = not stop_count[0]
+            stop_count[0] = True
 
             instruction.value = "Timer paused. You can no longer edit. Make sure to save!"
             hint.value = "Congrats! ...Did you actually finish it?"
