@@ -1,16 +1,13 @@
 # Updated Dec 6 5:02 PM EST
 
-import notepad
-import asyncio
 import sys
 import os
 import ttkbootstrap
-import multiprocessing
+import platform
 import flet as ft
-from flet_timer.flet_timer import Timer
 import tkinter as tk
-import time
 import tkinter.font as tkFont
+import ctypes
 from tkinter import *
 from ttkbootstrap import Window, Style
 from ttkbootstrap.constants import *
@@ -26,8 +23,12 @@ if sys.platform == "darwin":
     _tkinter.TkVersion = 8.6
     os.environ['TK_SILENCE_DEPRECATION'] = '1'
 
-class Notepad:
-    def __init__(self):
+class Notepad(Tk):
+    def __init__(self, pipe):
+        super().__init__()
+        self.pipe = pipe
+        self.running = True
+
         # Initialize the root window with ttkbootstrap
         self.__root = Window(themename="classic") # start with window, style it journal
         self.__root.title("Notepad") # title the window notepad
@@ -58,9 +59,35 @@ class Notepad:
         # Idle timer setup
         self.idle_time_limit = 5000  # milliseconds
         self.idle_timer = None
+        self.expired_idle = False
+
+        self.check_pipe_id = self.after(100, self.check_pipe)
 
         # Bind events
         self.__bindEvents()
+    
+    # Send message to Flet
+    def send_to_flet(self, message):
+        self.pipe.send(message)
+    
+    def check_pipe(self):
+        if not self.running:
+            return
+        
+        if self.pipe.poll():
+            msg = self.pipe.recv()
+            print("1 {msg}")
+            if msg == "Not started":
+                self.__disableTyping()
+                pass
+            elif msg == "User started":
+                self.__enableTyping()
+            elif msg == "Timer expired":
+                self.__deleteDocument()
+            elif msg == "Done":
+                self.__disableTyping()
+                self.__saveFile()
+        self.after(100, self.check_pipe)
 
     def run(self):
         """Run the main application loop."""
@@ -81,18 +108,34 @@ class Notepad:
         self.__thisTextArea.bind("<Command-v>", self.__disableAction)  # macOS Paste
 
     def __onKeyPress(self, event):
+        if self.expired_idle:
+            self.send_to_flet("Reset Timer")
+            self.expired_idle = False
         self.__resetIdleTimer()
 
     def __resetIdleTimer(self):
         if self.idle_timer is not None:
             self.__root.after_cancel(self.idle_timer)
-        self.idle_timer = self.__root.after(self.idle_time_limit, self.__deleteDocument)
+            self.idle_timer = None
+        self.idle_timer = self.__root.after(self.idle_time_limit, self.__expiredIdle)
+    
+    def __expiredIdle(self):
+        self.expired_idle = True
+        self.idle_timer = None
+        self.send_to_flet("Idle expired")
 
     def __deleteDocument(self):
-
-        # Add some comments or message here before it's deleted in Fletch
-
+        self.__disableTyping()
         self.__thisTextArea.delete(1.0, "end")
+        showinfo("Time's up!", "You took too long. Press Ok to return to homepage.")
+        self.send_to_flet("End")
+        self.__root.destroy()
+        
+    def __disableTyping(self):
+        self.__thisTextArea.config(state="disabled")
+    
+    def __enableTyping(self):
+        self.__thisTextArea.config(state="normal")
 
     def __createMenuBar(self):
         file_menu = Menu(self.__thisMenuBar, tearoff=0)
@@ -134,51 +177,51 @@ class Notepad:
         underline_btn = Button(toolbar, text="U", command=self.__makeUnderline, font=("Calibri", 12, "underline"), width=3)
         underline_btn.grid(row=0, column=2, padx=5, pady=5)
 
-        savefile_btn = Button(toolbar, text="SF", command=self.__saveFile, font=("Calibri", 12, "underline"), width=3)
+        savefile_btn = Button(toolbar, text="Save", command=self.__saveFile, font=("Calibri", 12, "underline"), width=3)
         savefile_btn.grid(row=0, column=3, padx=5, pady=5)
 
         # Buttons for advanced text formatting
 
         bold_underline_btn = Button(toolbar, text="B+U", command=self.__makeBoldUnderline, font=("Calibri", 12, "bold", "underline"), width=4)
-        bold_underline_btn.grid(row=0, column=4, padx=5, pady=5)
+        bold_underline_btn.grid(row=0, column=3, padx=5, pady=5)
 
         italic_underline_btn = Button(toolbar, text="I+U", command=self.__makeItalicUnderline, font=("Calibri", 12, "italic", "underline"), width=4)
-        italic_underline_btn.grid(row=0, column=5, padx=5, pady=5)
+        italic_underline_btn.grid(row=0, column=4, padx=5, pady=5)
 
         bold_italic_btn = Button(toolbar, text="B+I", command=self.__makeBoldItalic, font=("Calibri", 12, "bold", "italic"), width=4)
-        bold_italic_btn.grid(row=0, column=6, padx=5, pady=5)
+        bold_italic_btn.grid(row=0, column=5, padx=5, pady=5)
 
         bold_italic_underline_btn = Button(toolbar, text="B+I+U", command=self.__makeBoldItalicUnderline, font=("Calibri", 12, "bold", "italic", "underline"), width=5)
-        bold_italic_underline_btn.grid(row=0, column=7, padx=5, pady=5)
+        bold_italic_underline_btn.grid(row=0, column=6, padx=5, pady=5)
 
         # Buttons for center text, highlight, and text color
 
         centerTextButton = Button(toolbar, text="Center Text", command=self.__centerText)
-        centerTextButton.grid(row=0, column=8, padx=5, pady=5)
-
+        centerTextButton.grid(row=0, column=7, padx=5, pady=5)
+        
         highlightBlackButton = Button(toolbar, text="Highlight Black", command=lambda: self.__highlightText("black"))
-        highlightBlackButton.grid(row=0, column=9, padx=5, pady=5)
+        highlightBlackButton.grid(row=0, column=8, padx=5, pady=5)
 
         highlightBlueButton = Button(toolbar, text="Highlight Blue", command=lambda: self.__highlightText("blue"))
-        highlightBlueButton.grid(row=0, column=10, padx=5, pady=5)
+        highlightBlueButton.grid(row=0, column=9, padx=5, pady=5)
 
         highlightRedButton = Button(toolbar, text="Highlight Red", command=lambda: self.__highlightText("red"))
-        highlightRedButton.grid(row=0, column=11, padx=5, pady=5)
+        highlightRedButton.grid(row=0, column=10, padx=5, pady=5)
 
         highlightGreenButton = Button(toolbar, text="Highlight Green", command=lambda: self.__highlightText("green"))
-        highlightGreenButton.grid(row=0, column=12, padx=5, pady=5)
+        highlightGreenButton.grid(row=0, column=11, padx=5, pady=5)
 
         textColorBlackButton = Button(toolbar, text="Text Black", command=lambda: self.__changeTextColor("black"))
-        textColorBlackButton.grid(row=0, column=13, padx=5, pady=5)
+        textColorBlackButton.grid(row=0, column=12, padx=5, pady=5)
 
         textColorBlueButton = Button(toolbar, text="Text Blue", command=lambda: self.__changeTextColor("blue"))
-        textColorBlueButton.grid(row=0, column=14, padx=5, pady=5)
+        textColorBlueButton.grid(row=0, column=13, padx=5, pady=5)
 
         textColorRedButton = Button(toolbar, text="Text Red", command=lambda: self.__changeTextColor("red"))
-        textColorRedButton.grid(row=0, column=15, padx=5, pady=5)
+        textColorRedButton.grid(row=0, column=14, padx=5, pady=5)
 
         textColorGreenButton = Button(toolbar, text="Text Green", command=lambda: self.__changeTextColor("green"))
-        textColorGreenButton.grid(row=0, column=16, padx=5, pady=5)
+        textColorGreenButton.grid(row=0, column=15, padx=5, pady=5)
 
 
     def __createStatusBar(self):
@@ -198,8 +241,10 @@ class Notepad:
         pass  # Adjust layout as needed here
 
     def __quitApplication(self):
-        if self.timer:
-            self.timer.cancel()  # Cancel the idle timer thread
+        if self.idle_timer is not None:
+            self.__root.after_cancel(self.idle_timer)  # Cancel the idle timer thread
+        self.__root.after_cancel(self.check_pipe_id)
+        self.running = False
         self.__root.destroy()
 
     def __showAbout(self):
@@ -295,148 +340,3 @@ class Notepad:
             self.__thisTextArea.tag_configure(f"text_color_{color}", foreground=color)
         except ValueError as e:
             print(e)  # Optionally show this message to the user
-
-##########################################################
-
-def start_tkinter(pipe):
-    """Tkinter app function (main notepad)"""
-
-    notepad_window = notepad.Notepad(pipe)
-    notepad_window.run()
-
-def start_flet(pipe):
-    """Flet app function."""
-    # Send message to Tkinter
-    def send_to_tkinter(message):
-        pipe.send(message)
-
-    async def main(page: ft.Page):
-        # Add a Timer to periodically check the pipe
-        async def check_pipe():
-            while True:
-                # Check if there's a message
-                if pipe.poll():
-                    # Receive the message
-                    msg = pipe.recv()
-                    if msg == "Idle expired":
-                        await start_timer()
-                    elif msg == "Timer Reset":
-                        reset_timer()
-                    elif msg == "End":
-                        page.window.close()
-                await asyncio.sleep(0.1)
-        asyncio.create_task(check_pipe())
-
-        """Implement timer"""
-        # Page formatting
-        page.theme_mode = ft.ThemeMode.SYSTEM
-        page.window.center()
-        page.horizontal_alignment = "center"
-        page.vertical_alignment = "center"
-        page.padding = 40
-        page.window.frameless = True
-        page.window.always_on_top = True
-        page.window.height = 350
-        page.window.width = 425
-
-        minutes = ft.Dropdown(label = "Minutes", hint_text = "0 to 10", width = "125")
-        for i in range(11): minutes.options.append(ft.dropdown.Option(i))
-        minutes.value = 0
-        seconds = ft.Dropdown(label = "Seconds", hint_text = "1 to 59", width = "125")
-        for i in range(1, 60): seconds.options.append(ft.dropdown.Option(i))
-        dialog = ft.AlertDialog(bgcolor = "#85A27F", title = ft.Text("Please enter a valid number for minutes (0 to 10) and seconds (1 to 59). Click outside the dialog to exit."))
-
-        async def start_writing(e):
-            # Buttons for testing
-            start_button.visible = False
-            pause_button.visible = True
-
-            instruction.value = "Type away! :)"
-            hint.value = "The timer will begin after 5 seconds of inactivity. Only press done when you're finished or your document will lock"
-            page.update()
-
-            send_to_tkinter("User started")
-            print("User started")
-
-        async def start_timer():
-            # Convert user input to int
-            try:
-                minutes_value = int(minutes.value)
-                seconds_value = int(seconds.value)
-            except:
-                page.open(dialog)
-                return
-            
-            instruction.value = "Timer started! Continue typing or you'll lose your work..."
-            page.update()
-
-            send_to_tkinter("Timer started")
-            print("Timer started")
-            await update_timer(minutes_value, seconds_value)
-
-        async def update_timer(minutes_value, seconds_value):
-            # Calculate seconds remaining and start countdown
-            total_seconds = (minutes_value * 60) + seconds_value
-            stop_count[0] = False
-
-            for remaining in range(total_seconds, -1, -1):
-                if not stop_count[0]:
-                    minutes_update, seconds_update = divmod(remaining, 60)
-                    timer.value = "{:02d} min {:02d} sec".format(minutes_update, seconds_update)
-                    page.update()
-                    await asyncio.sleep(1)
-                else:
-                    break
-            if not stop_count[0]:
-                timer.value = "00 min 00 sec"
-                send_to_tkinter("Timer expired")
-        
-        def reset_timer():
-            stop_count[0] = True
-            timer.value = "__ min __ sec"
-            page.update()
-            print("Timer reset - flet")
-
-        # Pause the timer
-        def pause_timer(e):
-            start_button.visible = False
-            pause_button.visible = False
-            stop_count[0] = True
-
-            instruction.value = "Timer paused. You can no longer edit. Make sure to save!"
-            hint.value = "Congrats! ...Did you actually finish it?"
-            page.update()
-
-            send_to_tkinter("Done")
-            print("Done")
-
-        # Set up display and stop_count variable to control pausing
-        timer = ft.Text("__ min __ sec", size = 30)
-        start_button = ft.ElevatedButton("Start", on_click =  start_writing, color = "#85A27F")
-        pause_button = ft.ElevatedButton("Done!", on_click = pause_timer, color = "#85A27F", visible = False)
-        instruction = ft.Text("Set a time before you can start typing!", size = 15)
-        hint = ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)")
-        stop_count = [False]
-
-        # Add controls to page
-        page.add(instruction, ft.Container(padding = 2), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 2), timer, ft.Container(padding = 1), hint, ft.Container(padding = 2))
-        send_to_tkinter("Not started")
-        print("Not started")
-
-    ft.app(target=main)
-
-
-if __name__ == "__main__":
-    # Use a Pipe for inter-process communication
-    parent_conn, child_conn = multiprocessing.Pipe()
-
-    # Start Tkinter in a subthread
-    tk_process = multiprocessing.Process(target=start_tkinter, args=(parent_conn,))
-    tk_process.start()
-
-    try:
-        # Run Flet in the main thread
-        start_flet(child_conn)
-    finally:
-        tk_process.terminate()
-        tk_process.join()
