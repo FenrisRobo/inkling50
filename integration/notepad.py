@@ -89,7 +89,7 @@ class Notepad(Tk):
                 self.__disableTyping()
                 self.__saveFile()
                 self.__deleteDocument()
-        self.after(100, self.check_pipe)
+        self.after(1, self.check_pipe)
 
     def run(self):
         """Run the main application loop."""
@@ -111,6 +111,11 @@ class Notepad(Tk):
 
     def __onKeyPress(self, event):
         if self.expired_idle:
+            if self.idle_timer is not None:
+                try:
+                    self.__root.after_cancel(self.idle_timer)
+                except Exception as e:
+                    print(f"Error canceling idle timer: {e}")
             self.send_to_flet("Timer reset")
             self.expired_idle = False
         else:

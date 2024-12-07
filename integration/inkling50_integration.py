@@ -26,6 +26,8 @@ if sys.platform == "darwin":
     _tkinter.TkVersion = 8.6
     os.environ['TK_SILENCE_DEPRECATION'] = '1'
 
+
+
 def start_tkinter(pipe):
     """Tkinter app function (main notepad)"""
 
@@ -54,7 +56,7 @@ def start_flet(pipe):
                         reset_timer()
                     elif msg == "End":
                         page.window.close()
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(0.01)
         asyncio.create_task(check_pipe())
 
         """Implement timer"""
