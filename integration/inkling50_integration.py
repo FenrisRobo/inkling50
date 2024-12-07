@@ -93,7 +93,7 @@ def start_flet(pipe):
 
         async def start_timer():
             # Convert user input to int
-            if stop_count[0] == False and timer_state["status"] == "stopped":
+            if stop_count[0] == False:
                 try:
                     minutes_value = int(minutes.value)
                     seconds_value = int(seconds.value)
@@ -130,12 +130,16 @@ def start_flet(pipe):
                 send_to_tkinter("Timer expired")
         
         async def reset_timer():
-            if stop_count[0] == False and timer_state["status"] == "running":
+            if timer_state["status"] == "running":
                 stop_count[0] = True
-                timer.value = "__ min __ sec"
+                #timer_state["status"] = "stopped"
+                #timer.value = "__ min __ sec"
                 page.update()
-                timer_state["status"] = "stopped"
-                await update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"])
+
+                #await asyncio.sleep(0.5)
+                #stop_count[0] = False
+                #timer_state["status"] = "running"
+                #await update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"])
                 print("Timer reset - flet")
 
         # Pause the timer

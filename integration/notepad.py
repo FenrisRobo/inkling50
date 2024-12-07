@@ -126,7 +126,6 @@ class Notepad(Tk):
     
     def __expiredIdle(self):
         self.expired_idle = True
-        self.idle_timer = None
         self.send_to_flet("Idle expired")
 
     def __deleteDocument(self):
