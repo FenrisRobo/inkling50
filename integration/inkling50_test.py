@@ -58,7 +58,7 @@ class Notepad:
         self.__root.grid_columnconfigure(1, weight=1)
 
         # Idle timer setup
-        self.idle_timelimit = 8000  # milliseconds
+        self.idle_timelimit = 000  # milliseconds
         self.inactivity_threshold = 5000 # milliseconds
         self.idle_timer = None 
         self.document_deleted = False
@@ -92,18 +92,18 @@ class Notepad:
         """Starts the idle timer."""
         self.idle_timelimit = self.__root.after(8000, self.on_idle)
 
-    def __restart_timer(self, event=None):
-        """Cancels the existing timer and starts a new one."""
-        if self.idle_timelimit is not None:
-            self.__root.after_cancel(self.idle_timelimit)
-        self.start_timer()
-
         # Avoid redundant "Timer Reset" messages
         if self.pipe:
             # Only send "Timer Reset" if the timer was previously inactive
             if not hasattr(self, "_timer_active") or not self._timer_active:
                 self.pipe.send("Timer Reset")
                 self._timer_active = True
+
+    def __restart_timer(self, event=None):
+        """Cancels the existing timer and starts a new one."""
+        if self.idle_timelimit is not None:
+            self.__root.after_cancel(self.idle_timelimit)
+        self.start_timer()
     
     def on_idle(self):
         """Function triggered when the user is idle."""
@@ -461,7 +461,6 @@ def start_flet(pipe):
                 send_to_tkinter("Timer expired")
         
         def reset_timer():
-            stop_count[0] = True
             timer.value = "__ min __ sec"
             page.update()
             print("Timer reset - flet")
