@@ -47,9 +47,10 @@ def start_flet(pipe):
                     # Receive the message
                     msg = pipe.recv()
                     if msg == "Idle expired":
+                        stop_count[0] = False
                         await start_timer()
                     elif msg == "Timer reset":
-                        reset_timer()
+                        await reset_timer()
                     elif msg == "End":
                         page.window.close()
                 await asyncio.sleep(0.1)
@@ -66,6 +67,9 @@ def start_flet(pipe):
         page.window.always_on_top = True
         page.window.height = 350
         page.window.width = 425
+
+        stop_count = [False]
+        timer_state = {"status": "stopped", "initial_minutes": 0, "initial_seconds": 0}
 
         minutes = ft.Dropdown(label = "Minutes", hint_text = "0 to 10", width = "125")
         for i in range(11): minutes.options.append(ft.dropdown.Option(i))
@@ -88,47 +92,50 @@ def start_flet(pipe):
 
         async def start_timer():
             # Convert user input to int
-            try:
-                minutes_value = int(minutes.value)
-                seconds_value = int(seconds.value)
-            except:
-                page.open(dialog)
-                return
-            
-            timer_state["status"] = "running"
-            timer_state["initial_minutes"] = minutes_value
-            timer_state["initial_seconds"] = seconds_value
-            instruction.value = "Timer started! Continue typing or you'll lose your work..."
-            page.update()
+            if stop_count[0] == False and timer_state["status"] == "stopped":
+                try:
+                    minutes_value = int(minutes.value)
+                    seconds_value = int(seconds.value)
+                except:
+                    page.open(dialog)
+                    return
+                
+                timer_state["status"] = "running"
+                timer_state["initial_minutes"] = minutes_value
+                timer_state["initial_seconds"] = seconds_value
+                instruction.value = "Timer started! Continue typing or you'll lose your work..."
+                page.update()
 
-            send_to_tkinter("Timer started")
-            print("Timer started")
-            await update_timer(minutes_value, seconds_value)
+                send_to_tkinter("Timer started")
+                print("Timer started")
+                stop_count[0] = False
+                await update_timer(minutes_value, seconds_value)
 
         async def update_timer(minutes_value, seconds_value):
             # Calculate seconds remaining and start countdown
             total_seconds = (minutes_value * 60) + seconds_value
-            stop_count[0] = False
 
             for remaining in range(total_seconds, -1, -1):
-                if not stop_count[0]:
+                if stop_count[0] or timer_state["status"] == "stopped":
+                    timer.value = "{:02d} min {:02d} sec".format(minutes_value, seconds_value)
+                    break
+                else:
                     minutes_update, seconds_update = divmod(remaining, 60)
                     timer.value = "{:02d} min {:02d} sec".format(minutes_update, seconds_update)
                     page.update()
                     await asyncio.sleep(1)
-                else:
-                    break
-            if not stop_count[0]:
-                timer.value = "00 min 00 sec"
+
+            if stop_count[0] == False:
                 send_to_tkinter("Timer expired")
         
-        def reset_timer():
-            stop_count[0] = True
-            timer.value = "__ min __ sec"
-            page.update()
-            timer_state["status"] = "reset"
-            asyncio.create_task(update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"]))
-            print("Timer reset - flet")
+        async def reset_timer():
+            if stop_count[0] == False and timer_state["status"] == "running":
+                stop_count[0] = True
+                timer.value = "__ min __ sec"
+                page.update()
+                timer_state["status"] = "stopped"
+                await update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"])
+                print("Timer reset - flet")
 
         # Pause the timer
         def pause_timer(e):
@@ -142,15 +149,12 @@ def start_flet(pipe):
 
             send_to_tkinter("Done")
             print("Done")
-
-        # Set up display and stop_count variable to control pausing
+                # Set up display and stop_count variable to control pausing
         timer = ft.Text("__ min __ sec", size = 30)
         start_button = ft.ElevatedButton("Start", on_click =  start_writing, color = "#85A27F")
         pause_button = ft.ElevatedButton("Done!", on_click = pause_timer, color = "#85A27F", visible = False)
         instruction = ft.Text("Set a time before you can start typing!", size = 15)
         hint = ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)")
-        stop_count = [False]
-        timer_state = {"status": "stopped", "initial_minutes": 0, "initial_seconds": 0}
 
         # Add controls to page
         page.add(instruction, ft.Container(padding = 2), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 2), timer, ft.Container(padding = 1), hint, ft.Container(padding = 2))
