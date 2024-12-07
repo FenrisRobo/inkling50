@@ -1,5 +1,3 @@
-# Updated Dec 6 5:02 PM EST
-
 import sys
 import os
 import ttkbootstrap
@@ -59,7 +57,6 @@ class Notepad(Tk):
         # Idle timer setup
         self.idle_time_limit = 5000  # milliseconds
         self.idle_timer = None
-        self.expired_idle = False
 
         self.check_pipe_id = self.after(100, self.check_pipe)
 
@@ -83,7 +80,8 @@ class Notepad(Tk):
             elif msg == "User started":
                 self.__enableTyping()
             elif msg == "Timer expired":
-                showinfo("Time's up!", "You took too long. Press Ok to return to homepage.")
+                showinfo("Time's up!", "You took too long. Press Ok to save & return home")
+                self.__saveFile()
                 self.__deleteDocument()
             elif msg == "Done":
                 self.__disableTyping()
@@ -110,32 +108,19 @@ class Notepad(Tk):
         self.__thisTextArea.bind("<Command-v>", self.__disableAction)  # macOS Paste
 
     def __onKeyPress(self, event):
-        if self.expired_idle:
-            self.send_to_flet("Timer reset")
-            self.expired_idle = False
         self.__resetIdleTimer()
 
     def __resetIdleTimer(self):
         if self.idle_timer is not None:
-            try:
-                self.__root.after_cancel(self.idle_timer)
-            except Exception as e:
-                print(f"Error canceling idle timer: {e}")
-        self.idle_timer = self.__root.after(self.idle_time_limit, self.__expiredIdle)
-    
-    def __expiredIdle(self):
-        self.expired_idle = True
-        self.send_to_flet("Idle expired")
+            self.__root.after_cancel(self.idle_timer)
+        self.idle_timer = self.__root.after(self.idle_time_limit, lambda: self.send_to_flet("Idle expired"))
 
     def __deleteDocument(self):
-        if self.__thisTextArea.winfo_exists():
-            try:
-                self.__thisTextArea.delete(1.0, "end")
-            except tk.TclError as e:
-                print(f"Error deleting text: {e}")
+        self.__disableTyping()
+        self.__thisTextArea.delete(1.0, "end")
         self.send_to_flet("End")
         self.__root.destroy()
-        
+
     def __disableTyping(self):
         self.__thisTextArea.config(state="disabled")
     
@@ -248,9 +233,7 @@ class Notepad(Tk):
     def __quitApplication(self):
         if self.idle_timer is not None:
             self.__root.after_cancel(self.idle_timer)  # Cancel the idle timer thread
-        if self.idle_time is not None:
             self.__root.after_cancel(self.check_pipe_id)
-        self.__root.after_cancel(self.check_pipe_id)
         self.running = False
         self.__root.destroy()
 
