@@ -87,7 +87,7 @@ def start_flet(pipe):
             pause_button.visible = True
 
             instruction.value = "Type away! :)"
-            hint.value = "The timer will begin after 5 seconds of inactivity. Only press done when you're finished or your document will lock"
+            hint.value = "The timer will begin after 3 seconds of inactivity. Only press done when you're finished or your document will lock"
             page.update()
 
             send_to_tkinter("User started")
@@ -128,6 +128,11 @@ def start_flet(pipe):
 
 
         async def update_timer(minutes_value, seconds_value):
+            if stop_count[0]:
+                timer.value = "{:02d} min {:02d} sec".format(minutes_value, seconds_value)
+                page.update()
+                return
+            
             # Calculate seconds remaining and start countdown
             total_seconds = (minutes_value * 60) + seconds_value
 

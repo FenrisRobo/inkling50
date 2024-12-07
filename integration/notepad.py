@@ -57,11 +57,11 @@ class Notepad(Tk):
         self.__root.grid_columnconfigure(1, weight=1)
 
         # Idle timer setup
-        self.idle_time_limit = 5000  # milliseconds
+        self.idle_time_limit = 3000  # milliseconds
         self.idle_timer = None
         self.expired_idle = False
 
-        self.check_pipe_id = self.after(100, self.check_pipe)
+        self.check_pipe_id = self.after(1, self.check_pipe)
 
         # Bind events
         self.__bindEvents()
@@ -114,9 +114,10 @@ class Notepad(Tk):
             if self.idle_timer is not None:
                 try:
                     self.__root.after_cancel(self.idle_timer)
+                    self.idle_timer = None
                 except Exception as e:
                     print(f"Error canceling idle timer: {e}")
-            self.send_to_flet("Timer reset")
+            self.after(1, self.send_to_flet("Timer reset"))
             self.expired_idle = False
         else:
             self.__resetIdleTimer()
@@ -130,8 +131,8 @@ class Notepad(Tk):
         self.idle_timer = self.__root.after(self.idle_time_limit, self.__expiredIdle)
     
     def __expiredIdle(self):
-        self.expired_idle = True
         self.send_to_flet("Idle expired")
+        self.expired_idle = True
 
     def __deleteDocument(self):
         if self.__thisTextArea.winfo_exists():
