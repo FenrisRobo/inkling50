@@ -26,7 +26,6 @@ if sys.platform == "darwin":
     _tkinter.TkVersion = 8.6
     os.environ['TK_SILENCE_DEPRECATION'] = '1'
 
-
 def start_tkinter(pipe):
     """Tkinter app function (main notepad)"""
 
@@ -119,6 +118,7 @@ def start_flet(pipe):
             for remaining in range(total_seconds, -1, -1):
                 if stop_count[0] or timer_state["status"] == "stopped":
                     timer.value = "{:02d} min {:02d} sec".format(minutes_value, seconds_value)
+                    page.update()
                     break
                 else:
                     minutes_update, seconds_update = divmod(remaining, 60)
@@ -130,17 +130,16 @@ def start_flet(pipe):
                 send_to_tkinter("Timer expired")
         
         async def reset_timer():
-            if timer_state["status"] == "running":
-                stop_count[0] = True
-                #timer_state["status"] = "stopped"
-                #timer.value = "__ min __ sec"
-                page.update()
+            stop_count[0] = True
+            timer_state["status"] = "stopped"
+            timer.value = "__ min __ sec"
+            hint.value = "Reset"
+            page.update()
 
-                #await asyncio.sleep(0.5)
-                #stop_count[0] = False
-                #timer_state["status"] = "running"
-                #await update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"])
-                print("Timer reset - flet")
+            await asyncio.sleep(2)
+
+            asyncio.create_task(update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"]))
+            print("Timer reset - flet")
 
         # Pause the timer
         def pause_timer(e):
@@ -154,7 +153,8 @@ def start_flet(pipe):
 
             send_to_tkinter("Done")
             print("Done")
-                # Set up display and stop_count variable to control pausing
+        
+        # Set up display and stop_count variable to control pausing
         timer = ft.Text("__ min __ sec", size = 30)
         start_button = ft.ElevatedButton("Start", on_click =  start_writing, color = "#85A27F")
         pause_button = ft.ElevatedButton("Done!", on_click = pause_timer, color = "#85A27F", visible = False)
