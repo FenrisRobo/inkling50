@@ -58,8 +58,10 @@ class Notepad:
         self.__root.grid_columnconfigure(1, weight=1)
 
         # Idle timer setup
-        self.idle_time_limit = 5000  # milliseconds
-        self.idle_timer = None
+        self.idle_timelimit = 8000  # milliseconds
+        self.inactivity_threshold = 5000 # milliseconds
+        self.idle_timer = None 
+        self.document_deleted = False
 
         # Inside the __init__ method of the Notepad class
         self.__checkPipe()
@@ -69,10 +71,11 @@ class Notepad:
 
     def run(self):
         """Run the main application loop."""
+        self.__toggleTextState("disabled")  # Disable editing initially
         self.__root.mainloop()
 
     def __bindEvents(self):
-        self.__root.bind("<Key>", self.__onKeyPress)
+        self.__root.bind("<Key>", self.__restart_timer)
         self.__root.bind("<Configure>", self.__adjustSize)
         self.__root.bind("<Control-b>", lambda event: self.__makeBold())
         self.__root.bind("<Control-i>", lambda event: self.__makeItalic())
@@ -85,33 +88,53 @@ class Notepad:
         self.__thisTextArea.bind("<Command-c>", self.__disableAction)  # macOS Copy
         self.__thisTextArea.bind("<Command-v>", self.__disableAction)  # macOS Paste
 
-    def __onKeyPress(self, event):
-        "Reset the idle timer and notify Flet"
-        self.__resetIdleTimer()
+    def start_timer(self):
+        """Starts the idle timer."""
+        self.idle_timelimit = self.__root.after(8000, self.on_idle)
 
-        # Notify Flet timer to reset
+    def __restart_timer(self, event=None):
+        """Cancels the existing timer and starts a new one."""
+        if self.idle_timelimit is not None:
+            self.__root.after_cancel(self.idle_timelimit)
+        self.start_timer()
+
+        # Avoid redundant "Timer Reset" messages
         if self.pipe:
-            self.pipe.send("Timer reset")
+            # Only send "Timer Reset" if the timer was previously inactive
+            if not hasattr(self, "_timer_active") or not self._timer_active:
+                self.pipe.send("Timer Reset")
+                self._timer_active = True
+    
+    def on_idle(self):
+        """Function triggered when the user is idle."""
+        print("User is idle!")
 
-    def __resetIdleTimer(self):
+        # Schedule the first stage of inactivity detection (Flet timer)
+        self.idle_timer = self.__root.after(self.inactivity_threshold, self.__notifyFletApp)
+
+    def __notifyFletApp(self):
+        # Start the second stage for document deletion if user remains inactive
         if self.idle_timer is not None:
-            self.__root.after_cancel(self.idle_timer)
-        self.idle_timer = self.__root.after(self.idle_time_limit, self.__deleteDocument)
+            self.__root.after_cancel(self.idle_timer)  # Cancel the existing timer
+        self.idle_timer = self.__root.after(8000, self.__deleteDocument)  # Start a new timer
 
-        # Notify Flet to reset the timer if idle already expired
-        if self.pipe and self.idle_timer is None:
-            self.pipe.send("Timer reset")
-
-
-    def __deleteDocument(self):
-        # Clear the document content
-        self.__thisTextArea.delete(1.0, "end")
-        print("Document deleted due to inactivity.")
-
-        # Notify Flet timer to start (if connected)
+        """Notify the Flet app of inactivity and start the extended timer."""
         if self.pipe:
-            self.pipe.send("Idle expired")
-        print("Notified Flet to start its timer.")
+            self.pipe.send("User inactive")  # Notify Flet app
+        print("Flet timer started for extended inactivity.")
+        self._timer_active = False  # Mark the timer as inactive
+    
+    def __deleteDocument(self):
+        """Delete the document content after extended inactivity."""
+        if not self.document_deleted:
+            self.document_deleted = True
+            self.__thisTextArea.delete(1.0, "end")
+            print("Document content deleted due to extended inactivity.")
+
+            # Notify Flet that the document has been deleted
+            if self.pipe:
+                self.pipe.send("Document deleted")
+                print("Notified Flet app about document deletion.")
 
     def __toggleTextState(self, state):
         """Toggle the Text widget state between NORMAL and DISABLED."""
@@ -124,18 +147,18 @@ class Notepad:
         self.__root.mainloop()
         
     def __checkPipe(self):
-        if self.pipe and self.pipe.poll():
-            msg = self.pipe.recv()
-            print(f"Received message: {msg}")  # Debugging
-            if msg == "User started":
-                self.__toggleTextState(tk.NORMAL)
-                print("Notepad enabled")
-            elif msg == "Timer expired":
-                self.__toggleTextState(tk.DISABLED)
-                print("Notepad locked")
-
+        try:
+            if self.pipe and self.pipe.poll():
+                msg = self.pipe.recv()
+                print(f"Received message: {msg}")  # Debugging
+                if msg == "User started":
+                    self.__toggleTextState(tk.NORMAL)
+                elif msg == "Timer expired":
+                    self.__toggleTextState(tk.DISABLED)
+        except Exception as e:
+            print(f"Pipe error: {e}")
         # Keep checking the pipe
-        self.__root.after(100, self.__checkPipe)
+        self.__root.after(500, self.__checkPipe)
 
 
     def __createMenuBar(self):
@@ -361,13 +384,16 @@ def start_flet(pipe):
                 if pipe.poll():
                     # Receive the message
                     msg = pipe.recv()
-                    if msg == "Idle expired":
+                    print(f"Message from Tkinter: {msg}")
+                    if msg == "User inactive":
+                        # Start Flet timer (progress bar, etc.)
+                        print("User inactivity detected. Starting Flet timer.")
                         await start_timer()
                     elif msg == "Timer Reset":
                         reset_timer()
                     elif msg == "End":
                         page.window.close()
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(0.5)
         asyncio.create_task(check_pipe())
 
         """Implement timer"""
@@ -455,7 +481,7 @@ def start_flet(pipe):
 
         # Set up display and stop_count variable to control pausing
         timer = ft.Text("__ min __ sec", size = 30)
-        start_button = ft.ElevatedButton("Start", on_click =  start_writing, color = "#85A27F")
+        start_button = ft.ElevatedButton("Start!", on_click =  start_writing, color = "#85A27F")
         pause_button = ft.ElevatedButton("Done!", on_click = pause_timer, color = "#85A27F", visible = False)
         instruction = ft.Text("Set a time before you can start typing!", size = 15)
         hint = ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)")
