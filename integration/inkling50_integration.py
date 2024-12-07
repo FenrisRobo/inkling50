@@ -396,17 +396,16 @@ def start_flet(pipe):
                 send_to_tkinter("Timer expired")
         
         async def reset_timer():
-            if timer_state["status"] == "running":
-                stop_count[0] = True
-                #timer_state["status"] = "stopped"
-                #timer.value = "__ min __ sec"
-                page.update()
+            stop_count[0] = True
+            timer_state["status"] = "stopped"
+            timer.value = "__ min __ sec"
+            hint.value = "Reset"
+            page.update()
 
-                #await asyncio.sleep(0.5)
-                #stop_count[0] = False
-                #timer_state["status"] = "running"
-                #await update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"])
-                print("Timer reset - flet")
+            await asyncio.sleep(2)
+
+            asyncio.create_task(update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"]))
+            print("Timer reset - flet")
 
         # Pause the timer
         def pause_timer(e):
