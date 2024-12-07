@@ -360,15 +360,19 @@ def start_flet(pipe):
 
         async def start_timer():
             # Convert user input to int
-            try:
-                minutes_value = int(minutes.value)
-                seconds_value = int(seconds.value)
-            except:
-                page.open(dialog)
-                return
-            
-            instruction.value = "Timer started! Continue typing or you'll lose your work..."
-            page.update()
+            if stop_count[0] == False:
+                try:
+                    minutes_value = int(minutes.value)
+                    seconds_value = int(seconds.value)
+                except:
+                    page.open(dialog)
+                    return
+                
+                timer_state["status"] = "running"
+                timer_state["initial_minutes"] = minutes_value
+                timer_state["initial_seconds"] = seconds_value
+                instruction.value = "Timer started! Continue typing or you'll lose your work..."
+                page.update()
 
             send_to_tkinter("Timer started")
             print("Timer started")
@@ -391,11 +395,18 @@ def start_flet(pipe):
                 timer.value = "00 min 00 sec"
                 send_to_tkinter("Timer expired")
         
-        def reset_timer():
-            stop_count[0] = True
-            timer.value = "__ min __ sec"
-            page.update()
-            print("Timer reset - flet")
+        async def reset_timer():
+            if timer_state["status"] == "running":
+                stop_count[0] = True
+                #timer_state["status"] = "stopped"
+                #timer.value = "__ min __ sec"
+                page.update()
+
+                #await asyncio.sleep(0.5)
+                #stop_count[0] = False
+                #timer_state["status"] = "running"
+                #await update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"])
+                print("Timer reset - flet")
 
         # Pause the timer
         def pause_timer(e):

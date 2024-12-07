@@ -119,14 +119,12 @@ class Notepad(Tk):
         if self.idle_timer is not None:
             try:
                 self.__root.after_cancel(self.idle_timer)
-                self.idle_timer = None
             except Exception as e:
                 print(f"Error canceling idle timer: {e}")
         self.idle_timer = self.__root.after(self.idle_time_limit, self.__expiredIdle)
     
     def __expiredIdle(self):
         self.expired_idle = True
-        self.idle_timer = None
         self.send_to_flet("Idle expired")
 
     def __deleteDocument(self):
