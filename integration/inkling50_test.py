@@ -58,7 +58,7 @@ class Notepad:
         self.__root.grid_columnconfigure(1, weight=1)
 
         # Idle timer setup
-        self.idle_timelimit = 000  # milliseconds
+        self.idle_timelimit = 3000  # milliseconds
         self.inactivity_threshold = 5000 # milliseconds
         self.idle_timer = None 
         self.document_deleted = False
