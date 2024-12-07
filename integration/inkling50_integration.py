@@ -26,6 +26,7 @@ if sys.platform == "darwin":
     _tkinter.TkVersion = 8.6
     os.environ['TK_SILENCE_DEPRECATION'] = '1'
 
+
 def start_tkinter(pipe):
     """Tkinter app function (main notepad)"""
 
