@@ -270,11 +270,112 @@ class Notepad:
     def __saveAsPDF(self, file):
         pdf = FPDF()
         pdf.add_page()
-        pdf.set_font("Arial", size=12)  # Default font for PDF
-        lines = self.__thisTextArea.get(1.0, END).splitlines()
-        for line in lines:
-            pdf.cell(200, 10, txt=line, ln=True)
+        pdf.set_font("Arial", size=12)  # Default font for the PDF
+
+        # Loop through text widget content and handle tags
+        start_index = "1.0"  # Start from the beginning of the text
+        while True:
+            # Get the next tag and corresponding text
+            current_index = self.__thisTextArea.index(start_index)
+            line_end_index = self.__thisTextArea.index(f"{current_index} lineend")
+            text = self.__thisTextArea.get(current_index, line_end_index)
+
+            # Extract tags applied to this text range
+            tags = self.__thisTextArea.tag_names(current_index)
+
+            # Apply formatting based on tags
+            if "bold" in tags:
+                pdf.set_font("Arial", style="B", size=12)
+            elif "italic" in tags:
+                pdf.set_font("Arial", style="I", size=12)
+            elif "underline" in tags:
+                pdf.set_font("Arial", style="U", size=12)
+            else:
+                pdf.set_font("Arial", style="", size=12)  # Default font style
+
+            # Add the text to the PDF
+            pdf.multi_cell(0, 10, text)  # Multi-cell for wrapping text
+
+            # Move to the next line
+            next_index = self.__thisTextArea.index(f"{current_index}+1line")
+            if next_index == line_end_index:  # End of file
+                break
+            start_index = next_index
+
+        # Save the PDF to the file
         pdf.output(file)
+
+
+    def __getTagsInLine(self, line, line_number):
+        """Retrieve all tags applied to the specified line."""
+        tags_in_line = []
+        start_index = f"{line_number}.0"
+        end_index = f"{line_number}.{len(line)}"
+
+        # Retrieve tag ranges in the line
+        for tag in self.__thisTextArea.tag_names():
+            ranges = self.__thisTextArea.tag_ranges(tag)
+            for i in range(0, len(ranges), 2):
+                start, end = ranges[i], ranges[i + 1]
+                if self.__thisTextArea.compare(start, "<", end_index) and self.__thisTextArea.compare(end, ">", start_index):
+                    tags_in_line.append((tag, max(start_index, start), min(end_index, end)))
+
+        return tags_in_line
+
+    def __writeFormattedTextToPDF(self, pdf, line, tags_in_line):
+        """Write a line of text with formatting into the PDF."""
+        current_format = {"bold": False, "italic": False, "underline": False, "color": "black", "highlight": None}
+
+        for tag, start, end in tags_in_line:
+            start_idx = int(start.split('.')[1])
+            end_idx = int(end.split('.')[1])
+
+            # Extract the substring affected by the tag
+            tagged_text = line[start_idx:end_idx]
+
+            # Update format based on the tag
+            if "bold" in tag:
+                current_format["bold"] = True
+            if "italic" in tag:
+                current_format["italic"] = True
+            if "underline" in tag:
+                current_format["underline"] = True
+            if "text_color_" in tag:
+                current_format["color"] = tag.replace("text_color_", "")
+            if "highlight_" in tag:
+                current_format["highlight"] = tag.replace("highlight_", "")
+
+            # Apply the format
+            self.__applyFormatToPDF(pdf, tagged_text, current_format)
+
+        # Add a new line after each line of text
+        pdf.ln(10)
+
+    def __applyFormatToPDF(self, pdf, text, format_dict):
+        """Apply the specified format to the text and write to the PDF."""
+        font_style = ""
+        if format_dict["bold"]:
+            font_style += "B"
+        if format_dict["italic"]:
+            font_style += "I"
+        if format_dict["underline"]:
+            font_style += "U"
+
+        pdf.set_font("Arial", style=font_style, size=12)
+
+        # Set text color
+        color = format_dict["color"]
+        if color:
+            colors = {"black": (0, 0, 0), "red": (255, 0, 0), "blue": (0, 0, 255), "green": (0, 255, 0)}
+            pdf.set_text_color(*colors.get(color, (0, 0, 0)))
+
+        # Write text with or without background highlight
+        if format_dict["highlight"]:
+            highlight_color = {"black": (0, 0, 0), "red": (255, 0, 0), "blue": (0, 0, 255), "green": (0, 255, 0)}
+            pdf.set_fill_color(*highlight_color.get(format_dict["highlight"], (255, 255, 255)))
+            pdf.cell(0, 10, txt=text, ln=True, fill=True)
+        else:
+            pdf.cell(0, 10, txt=text, ln=True)
 
     def __makeBold(self):
         self.__applyTag("bold", {"font": ("Calibri", 12, "bold")})

@@ -52,7 +52,7 @@ class Notepad:
         self.__root.grid_columnconfigure(1, weight=1)
 
         # Idle timer setup
-        self.idle_time_limit = 5000  # milliseconds
+        self.idle_time_limit = 2000000  # milliseconds
         self.idle_timer = None
 
         # Bind events
@@ -226,11 +226,95 @@ class Notepad:
     def __saveAsPDF(self, file):
         pdf = FPDF()
         pdf.add_page()
-        pdf.set_font("Arial", size=12)  # Default font for PDF
-        lines = self.__thisTextArea.get(1.0, END).splitlines()
-        for line in lines:
-            pdf.cell(200, 10, txt=line, ln=True)
+
+        # Set default font and size
+        pdf.set_font("Arial", size=12)
+
+        # Extract all text and tags
+        start_index = "1.0"
+        end_index = self.__thisTextArea.index("end-1c")
+        text = self.__thisTextArea.get(start_index, end_index)
+        tags = self.__getTagsInRange(start_index, end_index)
+
+        # Write the text with formatting
+        self.__writeFormattedTextToPDF(pdf, text, tags)
+
+        # Save the file
         pdf.output(file)
+
+    def __writeFormattedTextToPDF(self, pdf, text, tags):
+        """Write a single line of text with formatting into the PDF."""
+        current_pos = 0
+        pdf.set_font("Arial", size=12)  # Default font
+
+        for tag, (start, end) in tags.items():
+            # Calculate positions
+            start_idx = int(start.split('.')[1])
+            end_idx = int(end.split('.')[1])
+
+            # Add unformatted text before the tagged segment
+            if current_pos < start_idx:
+                unformatted_text = text[current_pos:start_idx]
+                pdf.set_font("Arial", style="", size=12)
+                pdf.cell(0, 10, unformatted_text, border=0, ln=0)
+
+            # Extract tagged text and apply formatting
+            tagged_text = text[start_idx:end_idx]
+            format_style = ""
+            if "bold" in tag:
+                format_style += "B"
+            if "italic" in tag:
+                format_style += "I"
+            if "underline" in tag:
+                format_style += "U"
+
+            pdf.set_font("Arial", style=format_style, size=12)
+
+            # Set text color
+            if "text_color_" in tag:
+                color = tag.replace("text_color_", "")
+                colors = {"black": (0, 0, 0), "red": (255, 0, 0), "blue": (0, 0, 255), "green": (0, 255, 0)}
+                pdf.set_text_color(*colors.get(color, (0, 0, 0)))
+
+            # Apply background highlight (if applicable)
+            if "highlight_" in tag:
+                highlight = tag.replace("highlight_", "")
+                highlights = {"black": (0, 0, 0), "red": (255, 0, 0), "blue": (0, 0, 255), "green": (0, 255, 0)}
+                pdf.set_fill_color(*highlights.get(highlight, (255, 255, 255)))
+                text_width = pdf.get_string_width(tagged_text) + 2
+                current_y = pdf.get_y()
+                current_x = pdf.get_x()
+                pdf.rect(current_x, current_y, text_width, 10, 'F')  # Draw background
+                pdf.cell(0, 10, tagged_text, border=0, ln=0)
+            else:
+                pdf.cell(0, 10, tagged_text, border=0, ln=0)
+
+            current_pos = end_idx
+
+        # Add any remaining plain text after the last tag
+        if current_pos < len(text):
+            remaining_text = text[current_pos:]
+            pdf.set_font("Arial", style="", size=12)
+            pdf.cell(0, 10, remaining_text, border=0, ln=0)
+
+        # Reset colors after processing
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_fill_color(255, 255, 255)
+
+        # Add a new line at the end
+        pdf.ln(10)
+
+    def __getTagsInRange(self, start_index, end_index):
+        """Retrieve all tags and their ranges within the specified range."""
+        tags = {}
+        for tag in self.__thisTextArea.tag_names():
+            tag_ranges = self.__thisTextArea.tag_ranges(tag)
+            for i in range(0, len(tag_ranges), 2):
+                tag_start = self.__thisTextArea.index(tag_ranges[i])
+                tag_end = self.__thisTextArea.index(tag_ranges[i + 1])
+                if self.__thisTextArea.compare(tag_start, "<", end_index) and self.__thisTextArea.compare(tag_end, ">", start_index):
+                    tags[tag] = (max(tag_start, start_index), min(tag_end, end_index))
+        return tags
 
     def __makeBold(self):
         self.__applyTag("bold", {"font": ("Calibri", 12, "bold")})
