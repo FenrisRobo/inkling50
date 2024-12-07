@@ -50,7 +50,8 @@ def start_flet(pipe):
                         stop_count[0] = False
                         await start_timer()
                     elif msg == "Timer reset":
-                        await reset_timer()
+                        print(msg)
+                        reset_timer()
                     elif msg == "End":
                         page.window.close()
                 await asyncio.sleep(0.1)
@@ -110,16 +111,29 @@ def start_flet(pipe):
                 print("Timer started")
                 stop_count[0] = False
                 await update_timer(minutes_value, seconds_value)
+        
+        def reset_timer():
+            stop_count[0] = True
+            #timer_state["status"] = "stopped"
+            #timer.value = "__ min __ sec"
+            hint.value = "Reset"
+            page.update()
+
+            #await asyncio.sleep(2)
+
+            asyncio.create_task(update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"]))
+            print("Timer reset - flet")
+
 
         async def update_timer(minutes_value, seconds_value):
             # Calculate seconds remaining and start countdown
             total_seconds = (minutes_value * 60) + seconds_value
 
             for remaining in range(total_seconds, -1, -1):
-                if stop_count[0] or timer_state["status"] == "stopped":
+                if stop_count[0]:
                     timer.value = "{:02d} min {:02d} sec".format(minutes_value, seconds_value)
                     page.update()
-                    break
+                    return
                 else:
                     minutes_update, seconds_update = divmod(remaining, 60)
                     timer.value = "{:02d} min {:02d} sec".format(minutes_update, seconds_update)
@@ -128,18 +142,6 @@ def start_flet(pipe):
 
             if stop_count[0] == False:
                 send_to_tkinter("Timer expired")
-        
-        async def reset_timer():
-            stop_count[0] = True
-            timer_state["status"] = "stopped"
-            timer.value = "__ min __ sec"
-            hint.value = "Reset"
-            page.update()
-
-            await asyncio.sleep(2)
-
-            asyncio.create_task(update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"]))
-            print("Timer reset - flet")
 
         # Pause the timer
         def pause_timer(e):

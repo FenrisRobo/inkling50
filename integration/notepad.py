@@ -113,7 +113,8 @@ class Notepad(Tk):
         if self.expired_idle:
             self.send_to_flet("Timer reset")
             self.expired_idle = False
-        self.__resetIdleTimer()
+        else:
+            self.__resetIdleTimer()
 
     def __resetIdleTimer(self):
         if self.idle_timer is not None:
