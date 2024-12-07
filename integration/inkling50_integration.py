@@ -48,7 +48,7 @@ def start_flet(pipe):
                     msg = pipe.recv()
                     if msg == "Idle expired":
                         await start_timer()
-                    elif msg == "Timer Reset":
+                    elif msg == "Timer reset":
                         reset_timer()
                     elif msg == "End":
                         page.window.close()
@@ -95,6 +95,9 @@ def start_flet(pipe):
                 page.open(dialog)
                 return
             
+            timer_state["status"] = "running"
+            timer_state["initial_minutes"] = minutes_value
+            timer_state["initial_seconds"] = seconds_value
             instruction.value = "Timer started! Continue typing or you'll lose your work..."
             page.update()
 
@@ -123,6 +126,8 @@ def start_flet(pipe):
             stop_count[0] = True
             timer.value = "__ min __ sec"
             page.update()
+            timer_state["status"] = "reset"
+            asyncio.create_task(update_timer(timer_state["initial_minutes"], timer_state["initial_seconds"]))
             print("Timer reset - flet")
 
         # Pause the timer
@@ -145,6 +150,7 @@ def start_flet(pipe):
         instruction = ft.Text("Set a time before you can start typing!", size = 15)
         hint = ft.Text("Select the duration of idle activity before your document deletes. (Max: 10 mins)")
         stop_count = [False]
+        timer_state = {"status": "stopped", "initial_minutes": 0, "initial_seconds": 0}
 
         # Add controls to page
         page.add(instruction, ft.Container(padding = 2), ft.Row([minutes, seconds, start_button, pause_button], alignment = "center"), ft.Container(padding = 2), timer, ft.Container(padding = 1), hint, ft.Container(padding = 2))

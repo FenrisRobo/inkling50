@@ -109,7 +109,7 @@ class Notepad(Tk):
 
     def __onKeyPress(self, event):
         if self.expired_idle:
-            self.send_to_flet("Reset Timer")
+            self.send_to_flet("Timer reset")
             self.expired_idle = False
         self.__resetIdleTimer()
 
