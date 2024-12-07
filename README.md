@@ -17,6 +17,6 @@ inkling50 is a productivity app designed to increase the user's writing efficien
 ## Program Flow
 
 ## Contributors
-Ben Raihane - Homepage & GUI
-Ha Le - Timer & Calendar
-Ryan Whalen - Notepad
+- Ben Raihane - Homepage & GUI
+- Ha Le - Timer & Calendar
+- Ryan Whalen - Notepad
