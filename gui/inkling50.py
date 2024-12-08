@@ -8,7 +8,7 @@ SIDEBAR_COLOR = "#85A27F"
 BACKGROUND_COLOR = "#232b2b"
 TEXT_COLOR = "#FFFFFF"
 
-"""Calendar utilities"""
+"""Calendar utilities (referenced Simple To-Do Application In Python by Line Indent)"""
 # Create calendar object
 cal = calendar.Calendar()
 
@@ -45,7 +45,7 @@ class Settings:
 
     # Change date and month
     @staticmethod
-    def get_date(delta: int):
+    def update_date(delta: int):
         # If right arrow is pressed
         if delta == 1:
             if Settings.month + delta > 12:
@@ -134,7 +134,7 @@ class DateGrid(ft.Column):
 
     # Change placement of date based on month after arrow pressed
     def update_date_grid(self, delta: int):
-        Settings.get_date(delta)
+        Settings.update_date(delta)
         self.update_year_month(Settings.get_year(), Settings.get_month())
         self.populate_date_grid(Settings.get_year(), Settings.get_month())
         self.update()
