@@ -56,9 +56,9 @@ The homepage uses the framework Flet to implement the starting screen when the a
 
 
 
-## Timer - timer.py (Flet)
+## <a name="timer"></a>Timer - timer.py (Flet)
 
-The timer uses the framework Flet to implement a timer that is visible to the user. It works hand-in-hand with Notepad to achieve our goal. For more details regarding notepad.py and flow of communication, please refer to [Notepad - notepad.py](/main/notepad---notepadpy-tkinter) and [Communication Flow Between Timer & Notepad](main/communication-flow-between-timer-flet--notepad-tkinter), respectively.
+The timer uses the framework Flet to implement a timer that is visible to the user. It works hand-in-hand with Notepad to achieve our goal. For more details regarding notepad.py and flow of communication, please refer to [Notepad - notepad.py](#notepad) and [Communication Flow Between Timer & Notepad](#communication), respectively.
 
 1. The tkinter framework displays differently on Windows and macOS. The `if sys.platform == "darwin":` block is used to ensure cross-compatibility.
 2. `start_tkinter(pipe)` creates an object of class `Notepad`, which is a tkinter window, and pass the pipe variable (which is the connection from starting the multiprocessing pipe) to the constructor to enable communication between tkinter and Flet. It then runs the main application loop.
@@ -90,7 +90,7 @@ The timer uses the framework Flet to implement a timer that is visible to the us
 
 
 
-## Notepad - notepad.py (tkinter)
+## <a name="notepad"></a>Notepad - notepad.py (tkinter)
 
 Notepad uses the framework tkinter to implement basic word-processing functionalities and an idle that expires if the user stops typing for more than 5 seconds. It works hand-in-hand with Timer to achieve our goal. For more details regarding timer.py and flow of communication, please refer to `Timer - timer.py` and `Communication Flow Between Timer & Notepad`, respectively.
 
@@ -123,7 +123,7 @@ Notepad uses the framework tkinter to implement basic word-processing functional
 
 
 
-## Communication Flow Between Timer (Flet) & Notepad (tkinter)
+## <a name="communication"></a>Communication Flow Between Timer (Flet) & Notepad (tkinter)
 
 We use a multiprocessing pipe to establish communication between `timer.py` (main thread) and `notepad.py` (daemon thread). A `Notepad` object (tkinter) is created by ```start_tkinter(pipe)```. A timer object (Flet) is created by `start_flet(pipe)`. The pipe is used to send and receive messages between the two processes. Both the Flet and tkinter processes have `send_to_tkinter(message)` and `send_to_flet(message)` respectively that include `pipe.send()` to send messages to the other process. They both have `check_pipe()` scheduled to run every 100 ms. `if pipe.poll()` checks whether there is data available to be read. If it is true, `pipe.recv()` retrieves the message from the pipe. This message is stored in a variable and runs through an if-elif block to call the corresponding function. Below is the expected flow of communication between the two processes.  
  
