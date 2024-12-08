@@ -1,4 +1,4 @@
-# inkling 50
+# inkling50
 inkling50 is a notepad-based productivity app designed to increase the user's writing efficiency by enforcing continuous typing via a timer. Stop for too long and... POOF! There goes your work! 
 
 ## Features
@@ -10,7 +10,7 @@ inkling50 is a notepad-based productivity app designed to increase the user's wr
   - If the user is idle for more than 5 seconds, the timer they set at the beginning will start.
   - The user has the selected amount of time left to work on the document before typing is disabled, the user is prompted to save the file as a PDF, the text area content deletes, and Notepad with Timer exits.
   - At any time between when the user clicks `Start` and the timer expiration, the user can click `Done!` to stop the timer, export the file as a PDF, and exit Notepad with Timer.
-- Calendar Function
+- Calendar
   - A basic monthly view calendar with the ability to view previous and next months.
 
 ## Program Flow
