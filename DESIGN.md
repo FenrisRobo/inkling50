@@ -28,7 +28,7 @@ To test our source code at the command line, please install the following module
 1. Flet  
    ```pip install flet```
 2. tkinter  
-   ```pip install tkinter```
+   ```pip install tk```
 3. ttkbootstrap  
    ```pip install ttkbootstrap```
 4. fpdf  
