@@ -55,7 +55,7 @@ Specifically for the CS50 TFs grading inkling50 (first of all, merry CS50-mas!),
 
 ### Homepage
 
-The Hompeage part of inkling50 contains all the other programs the user will need such as notepad & timer, calendar, and the landing page. The Homepage section also contains a fixed menu on the left side of the window, which has icons that leads the user to the different programs of inkling50 while also allowing them to go back to the landing page if they so choose. Each respective icon correlates to a specific program, with the calendar icon corresponding to calendar, notepad icon corresponding to notepad, timer corresponding to timer, and the home icon corresponding to the landing page. On the landing page, the user will see a greeting which changes according to the user's device time settings along with instructions on how too navigate the inkling50 application.
+The Homepage part of inkling50 contains all the other programs the user will need such as notepad & timer, calendar, and the landing page. The Homepage section also contains a fixed menu on the left side of the window, which has icons that leads the user to the different programs of inkling50 while also allowing them to go back to the landing page if they so choose. Each respective icon correlates to a specific program, with the calendar icon corresponding to calendar, notepad icon corresponding to notepad, timer corresponding to timer, and the home icon corresponding to the landing page. On the landing page, the user will see a greeting which changes according to the user's device time settings along with instructions on how too navigate the inkling50 application.
 
 ### Notepad & Timer
 
@@ -65,7 +65,7 @@ The timer itself is also very intuitive. Essentially, to enable editing on notep
 
 ### Calendar
 
-The Notepad part of inkling50 
+The Calendar gives the user a monthly view. The user can press the left arrow to go to the previous month and the right arrow to go to the next month. Currently, the calendar helps the user to see the dates of the month and year selected, supporting the "productivity" nature of our program. The current calendar is a basic GUI that we plan to integrate with Notepad and Timer to track writing history in the future.
 
 ## FAQs 
 
