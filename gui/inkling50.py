@@ -8,9 +8,11 @@ SIDEBAR_COLOR = "#85A27F"
 BACKGROUND_COLOR = "#232b2b"
 TEXT_COLOR = "#FFFFFF"
 
-# Calendar utilities
+"""Calendar utilities"""
+# Create calendar object
 cal = calendar.Calendar()
 
+# Constants for date and month
 date_class = {0: "Mo", 1: "Tu", 2: "We", 3: "Th", 4: "Fr", 5: "Sa", 6: "Su"}
 month_class = {
     1: "January",
@@ -27,7 +29,9 @@ month_class = {
     12: "December",
 }
 
+# Settings class to navigate between year and month
 class Settings:
+    # Get system year and month
     year = datetime.now().year
     month = datetime.now().month
 
@@ -39,14 +43,18 @@ class Settings:
     def get_month():
         return Settings.month
 
+    # Change date and month
     @staticmethod
     def get_date(delta: int):
+        # If right arrow is pressed
         if delta == 1:
             if Settings.month + delta > 12:
                 Settings.month = 1
                 Settings.year += 1
             else:
                 Settings.month += 1
+
+        # If left arrow is pressed
         if delta == -1:
             if Settings.month + delta < 1:
                 Settings.month = 12
@@ -57,6 +65,7 @@ class Settings:
 
 # Calendar Classes
 class DateGrid(ft.Column):
+    # Class constructor
     def __init__(self, year: int, month: int, history_instance: object) -> None:
         super(DateGrid, self).__init__()
         self.year = year
@@ -64,6 +73,7 @@ class DateGrid(ft.Column):
         self.history_manager = history_instance
         self.date = ft.Text(f"{month_class[self.month]} {self.year}")
 
+        # Controls for the year & month header
         self.year_month = ft.Container(
             bgcolor="#85A27F",
             border_radius=ft.border_radius.only(top_left=10, top_right=10),
@@ -87,12 +97,13 @@ class DateGrid(ft.Column):
             ),
         )
 
+        # Controls for the weekday
         self.controls.insert(1, self.year_month)
         weekday = ft.Row(
             alignment="spaceEvenly",
             controls=[
                 ft.Container(
-                    content=ft.Text(date_class[i], color="black", text_align="center"),
+                    content=ft.Text(date_class[i], text_align="center"),
                     width=30,
                     height=30,
                     bgcolor=BACKGROUND_COLOR,
@@ -104,6 +115,7 @@ class DateGrid(ft.Column):
         self.controls.insert(1, weekday)
         self.populate_date_grid(self.year, self.month)
 
+    # Controls for date with placement depending on month
     def populate_date_grid(self, year: int, month: int):
         del self.controls[2:]
         for week in cal.monthdayscalendar(year, month):
@@ -120,18 +132,20 @@ class DateGrid(ft.Column):
                 )
             self.controls.append(row)
 
+    # Change placement of date based on month after arrow pressed
     def update_date_grid(self, delta: int):
         Settings.get_date(delta)
         self.update_year_month(Settings.get_year(), Settings.get_month())
         self.populate_date_grid(Settings.get_year(), Settings.get_month())
         self.update()
 
+    # Update year and month
     def update_year_month(self, year: int, month: int):
         self.year = year
         self.month = month
         self.date.value = f"{month_class[self.month]} {self.year}"
 
-
+# Placeholder for history
 class HistoryManager(ft.Column):
     def __init__(self):
         super(HistoryManager, self).__init__()
