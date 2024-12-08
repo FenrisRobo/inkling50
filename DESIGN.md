@@ -4,7 +4,7 @@ When the program first opens, the user will be presented with a homepage. From t
 
 At the opening of Notepad and Timer (which happens concurrently), the user will be prompted to set the amount of time that they have left to work on their document after the idle (5 seconds) expires. Once they click `Start`, the timer will not start immediately but rather send a message to Notepad - tkinter to enable typing and trigger the idle timer. Once the idle expires, the timer begins counting down. When the timer expires, typing will be disabled, the user will be notified and prompted to save as a PDF, the text area content deletes, and `Notepad.py` and `timer.py` exits. The user will then be returned to homepage. At any point from when the user click `Start` and the expiration of the timer, they can click `Done` to reach the same end case.
 
-Since we were not able to fully implement the calendar's track history feature in time, we wanted to provide the user with an opportunity to save their work if desired. We decided to limit the save option to PDF only as this makes it more troublesome to copy and paste as compared to a TXT file. Furthermore, copy and paste is disabled in our program, so the user must begin from scratch when they start over, aligning with our app's purpose.
+Since we were not able to fully implement the calendar's track history feature in time (our "Best" outcome), we wanted to provide the user with an opportunity to save their work if desired. We decided to limit the save option to PDF only as this makes it more troublesome to copy and paste as compared to a TXT file. Furthermore, copy and paste is disabled in our program, so the user must begin from scratch when they start over, aligning with our app's purpose.
 
 
 
