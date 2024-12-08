@@ -75,7 +75,7 @@ def start_flet(pipe):
         dialog = ft.AlertDialog(bgcolor = "#85A27F", title = ft.Text("Please enter a valid number for minutes (0 to 10) and seconds (1 to 59). Click outside the dialog to exit."))
 
         async def start_writing(e):
-            # Buttons for testing
+            # Update UI
             start_button.visible = False
             pause_button.visible = True
 
@@ -83,11 +83,12 @@ def start_flet(pipe):
             hint.value = "The timer will begin after 5 seconds of inactivity. Whether you press done prematurely or the timer expires, there's no turning back."
             page.update()
 
+            # Send message to tkinter
             send_to_tkinter("User started")
             print("User started")
 
         async def start_timer():
-            # Convert user input to int
+            # Stop the timer
             if stop_count[0] == False:
                 try:
                     minutes_value = int(minutes.value)
