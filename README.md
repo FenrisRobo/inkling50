@@ -39,12 +39,23 @@ There you go! The user should have correctly installed Inkling50 and will be abl
 
 ### CS50 TF Instructions
 
-
+Specifically for the CS50 TFs grading Inkling50 (first of all, merry CS50-mas!), the .zip file should contain 
 
 ## Usage
 
+### Homepage & GUI
+
+
+
+### Timer & Calendar
+
+### Notepad
 
 ## Program Flow
+
+###
+
+###
 
 ## FAQs
 
