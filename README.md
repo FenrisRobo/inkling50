@@ -1,18 +1,20 @@
-# inkling50
-inkling50 is a productivity app designed to increase the user's writing efficiency by enforcing continuous typing. Stop for too long and... POOF! There goes your work.
+# inkling 50
+inkling50 is a notepad-based productivity app designed to increase the user's writing efficiency by enforcing continuous typing via a timer. Stop for too long and... POOF! There goes your work! 
 
 ## Features
-- Fully Functional Word Processing Program
-  -Document storage, highlighting, typesetting, etc.
-- Timed Typing
-  - If user doesn't add text within set time, document "locks" as an image-like, uncopyable text file
-- Journal Function
-  - Each written document is stored in a calendar of when it was written.
-- 
+- Word Processing Program
+  - Notepad-like text area that includes typesetting, document saving, highlighting, etc. options with copy and paste disabled
+- Timer Tracking Program
+  - Time limitation such that if the user doesn't add text within the set time, the text area "locks" in an image-like, uncopyable text file
+- Calendar Function
+  - Allows the user to track their writing progerss throughout the week/month/year
 
 ## Installation
 
+
+
 ## Usage
+
 
 ## Program Flow
 
