@@ -10,7 +10,7 @@ inkling50 is a notepad-based productivity app designed to increase the user's wr
   - Allows the user to track their writing progerss throughout the week/month/year
 
 ## Installation
-
+First, users must navigate to the inkling50 GitHub page. From there, the user will be able to download [the inkling50 file by directly clicking on the (insert)]
 
 
 ## Usage
