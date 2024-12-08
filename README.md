@@ -13,6 +13,12 @@ inkling50 is a notepad-based productivity app designed to increase the user's wr
 - Calendar Function
   - A basic monthly view calendar with the ability to view previous and next months.
 
+## Program Flow
+
+When the program first opens, the user will be presented with a homepage. From the left sidebar, the user can click the `calendar` icon to view the calendar within the same window. The `home` icon will return to the starting screen. The `notepad` icon will open the main component of our program: Notepad and Timer.
+
+At the opening of Notepad and Timer (which happens concurrently), the user will be prompted to set the amount of time that they have left to work on their document after the idle (5 seconds) expires. Once they click `Start`, the timer will not start immediately but rather send a message to Notepad - tkinter to enable typing and trigger the idle timer. Within the text area while typing is enabled, the user can change the text formatting to help them visually during the writing process. Once the idle expires, the timer begins counting down. When the timer expires, typing will be disabled, the user will be notified and prompted to save as a PDF, the text area content deletes, and Notepad with Timer will exit The user will then be returned to Homepage. At any point from when the user click `Start` and the expiration of the timer, they can click `Done` to reach the same end case.
+
 ## Installation
 
 ### General Instructions
@@ -47,7 +53,7 @@ Specifically for the CS50 TFs grading Inkling50 (first of all, merry CS50-mas!),
 
 ## Usage
 
-### Homepage & GUI
+### Homepage
 
 The Hompeage/GUI part of Inkling50 contains all the other programs the user will need such as notepad & timer, calendar, and the landing page. The Homepage/GUI section also contains a fixed menu on the left side of the window, which has icons that leads the user to the different programs of Inkling50 while also allowing them to go back to the landing page if they so choose. Each respective icon correlates to a specific program, with the calendar icon corresponding to calendar, notepad icon corresponding to notepad, timer corresponding to timer, and the home icon corresponding to the landing page. On the landing page, the user will see a greeting which changes according to the user's device time settings along with instructions on how too navigate the Inkling50 application.
 
@@ -59,15 +65,11 @@ The Notepad & Timer part of Inkling50 constitutes the main "productivity"/functi
 
 The Timer/Calendar part of Inkling50 constitutes the main time-management portion of the "productivity" aspect of Inkling50. 
 
-The Timer/Calendar part of Inkling50 constitutes the main time-management portion of the "productivity" aspects of Inkling50 in the sense that 
+...
 
-### Notepad
+### Calendar
 
 The Notepad part of Inkling50 
-
-## Program Flow
-
-Upon clicking on the Inkling50 icon, the user should enter into the "Homepage" part of the application. Here, the user should see a green menu bar on the left-side of the flet/gui window. 
 
 ## FAQs 
 
@@ -75,5 +77,5 @@ Upon clicking on the Inkling50 icon, the user should enter into the "Homepage" p
 
 ## Contributors
 - Ben Raihane - Homepage & GUI
-- Ha Le - Timer & Calendar
-- Ryan Whalen - Notepad
+- Ha Le - Timer, Calendar, DESIGN.md, & README.md
+- Ryan Whalen - Notepad & README.md
