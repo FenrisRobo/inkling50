@@ -2,12 +2,16 @@
 inkling50 is a notepad-based productivity app designed to increase the user's writing efficiency by enforcing continuous typing via a timer. Stop for too long and... POOF! There goes your work! 
 
 ## Features
-- Word Processing Program
-  - Notepad-like text area that includes typesetting, document saving, highlighting, etc. options with copy and paste disabled
-- Timer Tracking Program
-  - Time limitation such that if the user doesn't add text within the set time, the text area "locks" in an image-like, uncopyable text file
+- Homepage
+  - The homepage allows the user to navigate through the different features of our application: Notepad with Timer and Calendar.
+- Notepad with Timer
+  - Notepad-like text area that includes text formatting options with copy and paste disabled.
+  - At the start of Notepad, the user is required to set the duration of time they will have left to work on the document when the idle of 5 seconds expires. The user will not be able to start working unless they press `Start` on the timer. Typing will then be enabled and the user must continuously type.
+  - If the user is idle for more than 5 seconds, the timer they set at the beginning will start.
+  - The user has the selected amount of time left to work on the document before typing is disabled, the user is prompted to save the file as a PDF, the text area content deletes, and Notepad with Timer exits.
+  - At any time between when the user clicks `Start` and the timer expiration, the user can click `Done!` to stop the timer, export the file as a PDF, and exit Notepad with Timer.
 - Calendar Function
-  - Allows the user to track their writing progerss throughout the week/month/year
+  - A basic monthly view calendar with the ability to view previous and next months.
 
 ## Installation
 
