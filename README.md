@@ -39,25 +39,29 @@ There you go! The user should have correctly installed Inkling50 and will be abl
 
 ### CS50 TF Instructions
 
-Specifically for the CS50 TFs grading Inkling50 (first of all, merry CS50-mas!), the .zip file should contain 
+Specifically for the CS50 TFs grading Inkling50 (first of all, merry CS50-mas!), the .zip file should contain the raw, source code for notepad.py, timer.py, and inkling50.py. In order to view this code in Visual Studio Code (assuming this is the main IDE that graders are using), the user should unzip the file in their chosen file location. Then, the user should drag the files into the Explorer side of VS Code. By entering into the file location that the notepad.py, timer.py, and inkling50.py (with inkling50.py being the most important as it is the gui which contains calls to notepad and timer) is downloaded in using one's VS Code terminal, the user should type python inkling50.py to run the code to make sure that everything is working properly.
 
 ## Usage
 
 ### Homepage & GUI
 
-
+The Homepage/GUI part of Inkling50 contains all the other programs such as calendar, time, and notepad. The main asepects of the Homepage/GUI portion of the Inkling50's application are the user's landing page and menu with icons that reference calendar, timer, notepad, and the landing page itself. The landing page and menu are colored specifically to be light-green and dark-green respectively, to create an aesthetic, productivity-based vibe that we were going for in the Inkling50 application. The buttons, font styles, and icon in general have been inspired from built-in Python code/libraries and integrated into the GUI via QtEditor. The menu itself is fixed, given that there are only currently four options that are available, and is on the left-side of the Inkling50 window. The menu ensures that the user can access all applications at every other applications within Inkling50. The landing page also contains a greeting message for the user that is based upon the time-settings of the user's device. From 6:00 AM to 11:59 AM, the message will say "Good Morning!". From 12:00 PM to 5:59 PM, the message will say "Good Afternoon!". From 6:00 PM onward until 6:00 AM, the message will say "Good Evening!" Furthermore, the landing page also includes instructions, calling for the user to "Select an option from the menu."
 
 ### Timer & Calendar
 
+The Timer/Calendar part of Inkling50 
+
 ### Notepad
+
+The Notepad part of Inkling50 
 
 ## Program Flow
 
-###
-
-###
+Upon clicking on the Inkling50 icon, the user should enter into the "Homepage" part of the application. Here, the user should see a green menu bar on the left-side of the flet/gui window. 
 
 ## FAQs
+
+
 
 ## Contributors
 - Ben Raihane - Homepage & GUI
