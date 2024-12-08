@@ -61,12 +61,6 @@ The Hompeage/GUI part of Inkling50 contains all the other programs the user will
 
 The Notepad & Timer part of Inkling50 constitutes the main "productivity"/functionalities of Inkling50. In combination with the timer, the notepad is a space for the user to type down whatever they need to within the time that they are given while also ensuring that they're doing so in a timely manner. The various basic type-setting functions such as bold, italics, and underline (along with advanced functions that combine said-options and also include highlighting, 'centering' of words', and font color changes) are also implemented in notepad to assist the user in emphasizing or annotating parts of the text they find important or useful to remember/refer to while typing. It is important to note here that copy and paste is disabled in notepad to ensure the user doesn't simply type on another application like Google Docs or Microsoft Word and copy over their work, which would ultimately defeat the purpose of having a timed-writing space. The notepad also automatically disables any further input and deletes the contents of the document once the timer has run out, ensuring that the user can't go back to work on 
 
-### Timer & Calendar
-
-The Timer/Calendar part of Inkling50 constitutes the main time-management portion of the "productivity" aspect of Inkling50. 
-
-...
-
 ### Calendar
 
 The Notepad part of Inkling50 
