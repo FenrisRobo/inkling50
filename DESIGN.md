@@ -49,7 +49,7 @@ To run the main component of our project (Notepad & timer without Homepage):
 
 The homepage uses the framework Flet to implement the starting screen when the application first opens and is returned to when Notepad and Timer exits.
 
-1. `main(page: ft.Page)` sets up the the GUI for homepage by defining other functions that create the required controls and assign them to the `on_click` event of the corresponding button. The sidebar and content are then added to the page through `page.add()` and the page updates for the user through `load_home()`
+1. `main(page: ft.Page)` sets up the the GUI for homepage by defining functions that retrieve the necessary data and create the required controls and assign them to the `on_click` event of the corresponding button. The sidebar and content are then added to the page through `page.add()` and the page updates for the user through `load_home()`
 2. `ft.app(target=main)` starts the Homepage - Flet application.
 3. We decided for our main color to be a certain shade of green and dark mode to be aesthetically pleasing to the user while also not straining their eyes from continuous typing.
 
