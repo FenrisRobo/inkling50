@@ -8,6 +8,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 import ctypes
 import reportlab
+from PIL import Image as PILImage, ImageDraw, ImageFont
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -220,169 +221,18 @@ class Notepad:
         except Exception as e:
             showerror("Error", f"Failed to open file: {e}")
 
-    def __saveFile(self):
-        try:
-            file = asksaveasfilename(defaultextension=".pdf", filetypes=[("PDF Files", "*.pdf")])
-            if file:
-                self.__saveAsPDF(file)
-        except Exception as e:
-            showerror("Error", f"Failed to save file: {e}")
-
-    def __saveAsPDF(self, file):
-
-        # Set up the document
-        pdf = SimpleDocTemplate(file, pagesize=letter)
-        base_style = ParagraphStyle(
-            name="Base",
-            fontName="Helvetica",
-            fontSize=12,
-        )
-
-        # Extract and style content
-        styled_texts = self.__getStyledTextSegments()
-
-        # Combine all text with inline styles
-        combined_paragraph = self.__buildStyledParagraph(styled_texts)
-
-        # Create the flowable content
-        flowables = [Paragraph(combined_paragraph, base_style)]
-
-        # Build the PDF
-        pdf.build(flowables)
+    def capture_notepad():
+        # Find the Notepad window
+        notepad = gw.getWindowsWithTitle('Notepad')[0]  # Get the first window with 'Notepad' in the title
+        # Get the window's position (x, y, width, height)
+        left, top, right, bottom = notepad.left, notepad.top, notepad.right, notepad.bottom
+        # Capture the region of the Notepad window
+        screenshot = pyautogui.screenshot(region=(left, top, right - left, bottom - top))
+        screenshot.save('notepad_screenshot.png')
 
 
-    def __getStyledTextSegments(self):
-        """
-        Processes text and tags into styled segments.
-        Returns a list of tuples: (text_segment, style_dict).
-        """
-        start_index = "1.0"
-        end_index = self.__thisTextArea.index("end-1c")
-        text = self.__thisTextArea.get(start_index, end_index)
-        tags = self.__getTagsInRange(start_index, end_index)
-
-        segments = []
-        current_pos = 0
-
-        # Sort and iterate over tag ranges
-        tag_ranges = []
-        for tag, (start, end) in tags.items():
-            start_idx = self.__textIndexToInt(start)
-            end_idx = self.__textIndexToInt(end)
-            tag_ranges.append((start_idx, end_idx, tag))
-
-        tag_ranges.sort(key=lambda x: x[0])
-
-        active_tags = set()
-        for start_idx, end_idx, tag in tag_ranges:
-            # Add plain text before a styled range
-            if current_pos < start_idx:
-                segments.append((text[current_pos:start_idx], self.__styleDictFromTags(active_tags)))
-
-            # Add the new tag and styled text
-            active_tags.add(tag)
-            segments.append((text[start_idx:end_idx], self.__styleDictFromTags(active_tags)))
-
-            # Move current position forward
-            current_pos = end_idx
-
-            # Remove tag after processing
-            active_tags.remove(tag)
-
-        # Add remaining plain text
-        if current_pos < len(text):
-            segments.append((text[current_pos:], self.__styleDictFromTags(active_tags)))
-
-        return segments
-
-
-    def __buildStyledParagraph(self, segments):
-        """
-        Combines styled segments into a single HTML-compatible paragraph string.
-        """
-        paragraph = ""
-        for text, style_dict in segments:
-            style_span = self.__getStyleSpan(style_dict)
-            paragraph += f"<span {style_span}>{text}</span>"
-        return paragraph
-
-
-    def __getStyleSpan(self, style_dict):
-        """
-        Converts a style dictionary into an inline CSS-like span.
-        """
-        styles = []
-        if style_dict.get("bold"):
-            styles.append("font-weight: bold;")
-        if style_dict.get("italic"):
-            styles.append("font-style: italic;")
-        if style_dict.get("underline"):
-            styles.append("text-decoration: underline;")
-        if "color" in style_dict:
-            styles.append(f"color: {style_dict['color']};")
-        if "background" in style_dict:
-            styles.append(f"background-color: {style_dict['background']};")
-        return f'style="{" ".join(styles)}"'
-
-
-    def __styleDictFromTags(self, tags):
-        """
-        Converts active tags into a style dictionary.
-        """
-        style = {}
-        for tag in tags:
-            if "bold" in tag:
-                style["bold"] = True
-            if "italic" in tag:
-                style["italic"] = True
-            if "underline" in tag:
-                style["underline"] = True
-            if "text_color_" in tag:
-                color = tag.replace("text_color_", "")
-                style["color"] = self.__getColorHex(color)
-            if "highlight_" in tag:
-                highlight = tag.replace("highlight_", "")
-                style["background"] = self.__getColorHex(highlight)
-        return style
-
-
-    def __textIndexToInt(self, index):
-        """
-        Converts a Tkinter text index (line.column) into an integer for sorting.
-        """
-        line, col = map(int, index.split('.'))
-        return (line - 1) * 1000 + col
-
-
-    def __getColorHex(self, color_name):
-        """
-        Maps color names to hex codes.
-        """
-        color_map = {
-            "black": "#000000",
-            "red": "#FF0000",
-            "blue": "#0000FF",
-            "green": "#00FF00",
-            "yellow": "#FFFF00",
-        }
-        return color_map.get(color_name, "#000000")
-
-
-    def __getTagsInRange(self, start_index, end_index):
-        """
-        Retrieve all tags and their ranges within the specified range.
-        """
-        tags = {}
-        for tag in self.__thisTextArea.tag_names():
-            tag_ranges = self.__thisTextArea.tag_ranges(tag)
-            for i in range(0, len(tag_ranges), 2):
-                tag_start = self.__thisTextArea.index(tag_ranges[i])
-                tag_end = self.__thisTextArea.index(tag_ranges[i + 1])
-                if self.__thisTextArea.compare(tag_start, "<=", end_index) and self.__thisTextArea.compare(tag_end, ">", start_index):
-                    tags[tag] = (max(tag_start, start_index), min(tag_end, end_index))
-        return tags
-
-
+    capture_notepad()
+ 
     def __makeBold(self):
         self.__applyTag("bold", {"font": ("Calibri", 12, "bold")})
 
