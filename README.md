@@ -49,7 +49,7 @@ The Homepage/GUI part of Inkling50 contains all the other programs such as calen
 
 ### Timer & Calendar
 
-The Timer/Calendar part of Inkling50 
+The Timer/Calendar part of Inkling50 constitutes the main time-management portion of the "productivity" aspects of Inkling50 in the sense that 
 
 ### Notepad
 
@@ -59,7 +59,7 @@ The Notepad part of Inkling50
 
 Upon clicking on the Inkling50 icon, the user should enter into the "Homepage" part of the application. Here, the user should see a green menu bar on the left-side of the flet/gui window. 
 
-## FAQs
+## FAQs 
 
 
 
