@@ -65,7 +65,7 @@ The timer itself is also very intuitive. Essentially, to enable editing on notep
 
 ### Calendar
 
-The Notepad part of inkling50 
+The Calendar gives the user a monthly view. The user can press the left arrow to go to the previous month and the right arrow to go to the next month Currently, the calendar helps the user to see the dates of the month and year selected, supporting the "productivity" nature of our program. The current calendar is a basic GUI that we plan to integrate with Notepad and Timer to track writing history in the future.
 
 ## FAQs 
 
