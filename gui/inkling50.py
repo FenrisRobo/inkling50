@@ -1,6 +1,7 @@
 import flet as ft
 from datetime import datetime
 import calendar
+import os
 
 # Colors
 PRIMARY_COLOR = "#B7D4B1"
@@ -182,6 +183,10 @@ def main(page: ft.Page):
             content=calendar_grid,
         )
         content.update()
+    
+    # Load notepad with timer
+    def load_notepad_timer():
+        os.system("flet timer.py")
 
     # Load home screen
     def load_home():
@@ -206,6 +211,7 @@ def main(page: ft.Page):
                 # Sidebar Icons
                 ft.IconButton("home", icon_color=TEXT_COLOR, on_click=lambda _: load_home()),
                 ft.IconButton("calendar_today", icon_color=TEXT_COLOR, on_click=lambda _: load_calendar()),
+                ft.IconButton("description", icon_color=TEXT_COLOR, on_click=lambda _: load_notepad_timer())
             ],
             spacing=5,
             alignment=ft.MainAxisAlignment.START,
