@@ -103,7 +103,7 @@ class DateGrid(ft.Column):
             alignment="spaceEvenly",
             controls=[
                 ft.Container(
-                    content=ft.Text(date_class[i], color="black", text_align="center"),
+                    content=ft.Text(date_class[i], text_align="center"),
                     width=30,
                     height=30,
                     bgcolor=BACKGROUND_COLOR,
