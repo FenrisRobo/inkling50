@@ -8,13 +8,41 @@ To establish communication between the two processes (tkinter - Notepad and Flet
 
 Since Flet is asynchronous (where multiple functions can run concurrently without blocking the main event) and tkinter is synchronous, we often ran into issues of ensuring messages are sent and received immediately during the implementation of Timer. Due to the fast-paced nature of this project, we opted for a compromised option to try our best to optimize both the GUI & functionalities and were able to achieve the proposed program. However, we learned that it would be best for future projects to only use one framework or multiple frameworks of the same nature.
 
-## Homepage (Flet)
+## Testing
 
-## Notepad (tkinter)
+To test our source code at the command line, please install the following modules:
 
-## Timer (Flet)
+1. Flet  
+   ```pip install flet```
+2. tkinter  
+   ```pip install tkinter```
+3. ttkbootstrap  
+   ```pip install ttkbootstrap```
+4. fpdf  
+   ```pip install fpdf```
 
-## Calendar (Flet)
+To run all the components of our project (which starts from Homepage):  
+```flet inkling50.py```
+
+To run the main component of our project (Notepad & timer without Homepage):  
+```flet timer.py```  
+   - Please ensure that `timer.py` and `notepad.py` are in the same directory!  
+
+## Homepage - inkling50.py (Flet)
+
+## Notepad - notepad.py (tkinter)
+
+Notepad uses the framework tkinter to implement basic word-processing functionalities and an idle timer that expires if the user stops typing for more than 5 seconds.
+
+1. The tkinter framework displays differently on Windows and macOS. The `if sys.platform == "darwin":` block is used to ensure cross-compatibility.
+2. The `Notepad` class inherits from the Tk (tkinter) module and encapsulates all the components of the Notepad window. An object of the class `Notepad` is created by timer.py.
+   - sd
+
+## Timer - timer.py (Flet)
+
+## Communication Flow Between Timer & Notepad
+
+## Calendar - inkling50.py (Flet)
 
 Calendar, which is in our "Best" outcome, uses the framework Flet and is implemented at the top of `inkling50.py`.
 
