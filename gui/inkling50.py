@@ -96,9 +96,9 @@ class DateGrid(ft.Column):
                 ],
             ),
         )
+        self.controls.insert(1, self.year_month)
 
         # Controls for the weekday
-        self.controls.insert(1, self.year_month)
         weekday = ft.Row(
             alignment="spaceEvenly",
             controls=[
