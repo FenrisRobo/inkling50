@@ -1,6 +1,8 @@
 ## Program Flow
 
-At the opening of Notepad and Timer (which happens concurrently), the user will be prompted to set the amount of time that they have left to work on their document after the idle (5 seconds) expires. Once they click `Start`, the timer will not start immediately but rather send a message to Notepad - tkinter to enable typing and trigger the idle timer. Once the idle expires, the timer begins counting down. When the timer expires, typing will be disabled, the user will be notified and prompted to save before the document deletes and exits. At any point from when the user click `Start` and the expiration of the timer, they can click `Done` to reach the same end case.
+When the program first opens, the user will be presented with a homepage. From the sidebar, the user can click the `calendar` icon to view the calendar within the same window. The `home` icon will return to the starting screen. The `notepad` icon will open the main component of our program: Notepad and Timer.
+
+At the opening of Notepad and Timer (which happens concurrently), the user will be prompted to set the amount of time that they have left to work on their document after the idle (5 seconds) expires. Once they click `Start`, the timer will not start immediately but rather send a message to Notepad - tkinter to enable typing and trigger the idle timer. Once the idle expires, the timer begins counting down. When the timer expires, typing will be disabled, the user will be notified and prompted to save before the document deletes and exits. The user will then be returned to homepage. At any point from when the user click `Start` and the expiration of the timer, they can click `Done` to reach the same end case.
 
 
 
@@ -33,6 +35,7 @@ To test our source code at the command line, please install the following module
 
 To run all the components of our project (which starts from Homepage):  
 ```flet inkling50.py```
+   - Please ensure that `inkling50.py`, `timer.py`, and `notepad.py` are in the same directory!  
 
 To run the main component of our project (Notepad & timer without Homepage):  
 ```flet timer.py```  
@@ -42,6 +45,12 @@ To run the main component of our project (Notepad & timer without Homepage):
 
 
 ## Homepage - inkling50.py (Flet)
+
+The homepage uses the framework Flet to implement the starting screen when the application first opens and is returned to when Notepad and Timer exits.
+
+1. `main(page: ft.Page)` sets up the the GUI for homepage by defining other functions that create the required controls and assign them to the `on_click` event of the corresponding button. The sidebar and content are then added to the page through `page.add()` and the page updates for the user through `load_home()`
+2. `ft.app(target=main)` starts the Homepage - Flet application.
+3. We decided for our main color to be a certain shade of green and dark mode to be aesthetically pleasing to the user while also not straining their eyes from continuous typing.
 
 
 
