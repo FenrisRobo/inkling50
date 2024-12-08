@@ -62,7 +62,6 @@ def start_flet(pipe):
         page.horizontal_alignment = "center"
         page.vertical_alignment = "center"
         page.padding = 40
-        page.window.frameless = True
         page.window.always_on_top = True
         page.window.height = 350
         page.window.width = 425
