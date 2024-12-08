@@ -1,3 +1,6 @@
+## Program Flow
+
+
 ## Language & Frameworks
 
 For this project, we decided to use **Python**. Although it is slower, the language is easier for all team members to understand and use. 
@@ -39,17 +42,6 @@ To run the main component of our project (Notepad & timer without Homepage):
 
 
 
-## Notepad - notepad.py (tkinter)
-
-Notepad uses the framework tkinter to implement basic word-processing functionalities and an idle that expires if the user stops typing for more than 5 seconds.
-
-1. The tkinter framework displays differently on Windows and macOS. The `if sys.platform == "darwin":` block is used to ensure cross-compatibility.
-2. The `Notepad` class inherits from the Tk (tkinter) module and encapsulates all the components of the Notepad window. An object of the class `Notepad` is created by timer.py.
-   - sd
-
-
-
-
 ## Timer - timer.py (Flet)
 
 The timer uses the framework Flet to implement a timer that is visible to the user. At the opening of Notepad and Timer (which happens concurrently), the user will be prompted to set the amount of time that they have left to work on their document after the idle (5 seconds) expires. Once they click `Start`, the timer will not start immediately but rather send a message to Notepad - tkinter to enable typing and trigger the idle timer. Once the idle expires, the timer begins counting down. When the timer expires, typing will be disabled, the user will be notified and prompted to save before the document deletes and exits. At any point from when the user click `Start` and the expiration of the timer, they can click `Done` to reach the same end case. For more details regarding notepad.py and flow of communication, please refer to `Notepad - notepad.py` and `Communication Flow Between Timer & Notepad`, respectively.
@@ -83,6 +75,41 @@ The timer uses the framework Flet to implement a timer that is visible to the us
 
 
 
+
+## Notepad - notepad.py (tkinter)
+
+Notepad uses the framework tkinter to implement basic word-processing functionalities and an idle that expires if the user stops typing for more than 5 seconds.
+
+1. The tkinter framework displays differently on Windows and macOS. The `if sys.platform == "darwin":` block is used to ensure cross-compatibility.
+2. The `Notepad` class inherits from the `Tk` (tkinter) module and encapsulates all the components of the Notepad window. An object of the class `Notepad` is created by timer.py.
+   - `super().__init__()` creates a temporary instance of the parent class `Tk` to allow us to leverage its existing functions, such as `after()`.
+      - `self.pipe = pipe` assigns the pipe being passed to the constructor to the `pipe` variable of the object and allows for inter-process communication with Flet.
+      - `self.running` is used as a flag variable to allow us to terminate check_pipe() when the application quits, effectively stopping communication with Flet.
+      - The next few code blocks set up the GUI of Notepad using `ttkbootstrap` either through direct widget classes or helper functions when the aspect is composed of multiple widgets. We used `ttkbootstrap` as it enhances the UI features of tkinter.
+      - `self.idle_time_limit = 5000` gives the user 5 seconds of idle activity before the Flet timer is triggered. `self.idle_timer = None` will later be used to reset the idle timer in response to keypress events.
+      - `self.check_pipe_id = self.after(100, self.check_pipe)` schedules `check_pipe()` to run every 100 ms so the pipe is continuously checked for incoming messages and timely responses. The returned integer ID is stored to later cancel the task when the application quits.
+   - `send_to_flet(self, message)` sends the `message` passed to it by the caller to Flet using `self.pipe.send(message)`. We decided to make it a separate function although it contains only one line to ensure clarity on the sender and receiver as both `notepad.py` and `timer.py` use `pipe.send(message)`.
+   - `check_pipe(self)` checks the pipe for any messages from Flet to tkinter and call the corresponding functions. Refer to `Communication Flow Between Timer & Notepad` for explanations of the different pipe functions, functions associated with each message, and communication with Flet.
+      - `self.after(100, self.check_pipe)` runs the nested-if block inside `check_pipe(self)` every 0.1 seconds (100 ms)
+   - `run(self)` is called by timer.py, executing `self.__root.mainloop()` which runs the main application loop. Without this, the Notepad - tkinter side of the program would never start.
+   - `__bindEvents(self)` defines a list of key bindings and the associated functions, such as changing text format, updating the word count, and disabling certain actions.
+      - We decided to disable copy and paste to prevent any loopholes around the delete document aspect of our program. The user not being able to copy and paste will remove their reliance on being able to just continue the work later in the app and push them to continuously write.
+   - `__onKeyPress(self, event)` calls `__resetIdleTimer(self)` which checks if `self.idle_timer` has an integer ID associated with a scheduled event.
+      - If `self.idle_timer` does have an integer ID (returns `True`), the idle is canceled as this function was indirectly triggered by a keypress event which means the user is continuously typing.
+      - If `self.idle_timer` does not have an integer ID (returns `False`), the idle is started. If 5 seconds of idle activity have passed, a message will be sent to Flet to start the countdown timer until document deletion.
+      - However, if the user is continuously typing, the `__resetIdleTimer(self)` will execute again and this time run the `True` condition. This essentially creates a cycle of creating and canceling the idle, effectively resetting the idle of 5 seconds as long as the user continues typing. 
+   - `__deleteDocument(self)` is called after receiving a `"Timer expired"` or `"Done"` message from Flet. It disables typing, deletes all the text the user has typed in Notepad, sends a message to Flet to close the timer window, and destroys the tkinter window -- ending the program.
+   - `__disableTyping(self)` and `__enableTyping(self)` change whether user input is accepted by changing the configuration state of the TextArea. This further enforces the timer that is an integral part of our program.
+   - `__createMenuBar(self)` and `__createToolbar(self)` create the toolbar at the top of Notepad that allows users to change the text formatting to assist them visually during the writing process. We were able to achieve our "Better" outcome of implementing text highlighting and text color, Due to issues with tkinter allowing multiple buttons to be "selected" at once, we had to create additional buttons for a combination of bold, italic, and underline.
+   - `__createStatusBar(self)` and `def __updateWordCount(self, event=None)` to implement the word count to inform the user of their progress throughout the work time.
+   - `__disableAction(self, event=None)` informs the user that they cannot copy and paste.
+   - `__quitApplication(self)` cancels the scheduled tasks, which are checking the pipe for incoming messages and the idle timer, to prevent a memory leak. `self.running = False` also stops `check_pipe()`. The Notepad - tkinter window then closes.
+   - `__saveFile(self)` and `__saveAsPDF(self, file)` prompts the user to save their work as a PDF before the program terminates. Since we were not able to fully implement the calendar's track history feature in time, we wanted to provide the user with an opportunity to save their work if desired. However, since it saves as a PDF, this makes it more troublesome to copy and paste as compared to a TXT file. Furthermore, copy and paste is disabled in our program, so the user must begin from scratch when they start over, aligning with our app's purpose.
+
+
+
+
+
 ## Communication Flow Between Timer & Notepad
 
 We use a multiprocessing pipe to establish communication between `timer.py` (main thread) and `notepad.py` (daemon thread). A `Notepad` object (tkinter) is created by ```start_tkinter(pipe)```. A timer object (Flet) is created by `start_flet(pipe)`. The pipe is used to send and receive messages between the two processes. Both the Flet and tkinter processes have `send_to_tkinter(message)` and `send_to_flet(message)` respectively that include `pipe.send()` to send messages to the other process. They both have `check_pipe()` scheduled to run every 100 ms. `if pipe.poll()` checks whether there is data available to be read. If it is true, `pipe.recv()` retrieves the message from the pipe. This message is stored in a variable and runs through an if-elif block to call the corresponding function. Below is the expected flow of communication between the two processes.  
@@ -93,9 +120,11 @@ We use a multiprocessing pipe to establish communication between `timer.py` (mai
 
 1. **(Timer & notepad opens) F -> T: "Not started"
    - T disable typing in Notepad so that the user can not work unless the timer is started.
+     ```self.__disableTyping()```
 2. **(User press Start timer) F -> T: "User started"
    - T enable typing in Notepad
-   - T runs its idle which reset if user starts typing again within 5 seconds**
+   ```self.__enableTyping()```
+   - T runs its idle which reset if user starts typing again within 5 seconds
 3. (User stopped typing for more than 5 seconds) T -> F: "Idle expired"
    - F starts its timer where the user has the specified amount of time left to work before their work in the text area deletes.
      ```
@@ -106,20 +135,31 @@ We use a multiprocessing pipe to establish communication between `timer.py` (mai
    - T disable typing in Notepad to prevent the user from pressing Done to avoid the timer
    - T calls `__saveFile()` to prompt the user to save their work as PDF (which is not easily copied from)
    - After the user saves the file or presses canceled, T calls `__deleteDocument()` to delete the document and close Notepad
+   ```
+   self.__disableTyping()
+   self.__saveFile()
+   self.__deleteDocument()
+   ```
 5. (Timer ran out) F -> T: "Timer expired"
    - T show info dialog to inform the user
    - T calls `__saveFile()` to prompt the user to save their work as PDF (which is not easily copied from)
    - After the user saves the file or presses canceled, T calls `__deleteDocument()` to delete the document and close Notepad
+   ```
+   showinfo("Time's up!", "You took too long. Press Ok to save & return home")
+   self.__saveFile()
+   self.__deleteDocument()
+   ```
 6. **(__deleteDocument() is called) T -> F: "End"
-   - F close the Flet timer window
+   - F close the Flet timer window  
      ```page.window.close()```
+
   
 There are 3 possible patterns for the communication flow, referencing the list above:  
-- User never triggered the timer - Flet side
+- User never triggered the timer (Flet side)
    - 1 -> 2 -> 4 -> 6
-- User trigger the timer - Flet side but press Done
+- User trigger the timer (Flet side) but press Done
    - 1 -> 2 -> 3 -> 4 -> 6
-- User trigger the timer - Flet side and the timer runs out
+- User trigger the timer (Flet side) and the timer runs out
    - 1 -> 2 -> 3 -> 5 -> 6
 
 
