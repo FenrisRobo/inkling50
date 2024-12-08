@@ -58,7 +58,7 @@ The homepage uses the framework Flet to implement the starting screen when the a
 
 ## Timer - timer.py (Flet)
 
-The timer uses the framework Flet to implement a timer that is visible to the user. It works hand-in-hand with Notepad to achieve our goal. For more details regarding notepad.py and flow of communication, please refer to [Notepad - notepad.py](/notepad---notepadpy-tkinter) and [Communication Flow Between Timer & Notepad](/communication-flow-between-timer-flet--notepad-tkinter), respectively.
+The timer uses the framework Flet to implement a timer that is visible to the user. It works hand-in-hand with Notepad to achieve our goal. For more details regarding notepad.py and flow of communication, please refer to [Notepad - notepad.py](/main/notepad---notepadpy-tkinter) and [Communication Flow Between Timer & Notepad](main/communication-flow-between-timer-flet--notepad-tkinter), respectively.
 
 1. The tkinter framework displays differently on Windows and macOS. The `if sys.platform == "darwin":` block is used to ensure cross-compatibility.
 2. `start_tkinter(pipe)` creates an object of class `Notepad`, which is a tkinter window, and pass the pipe variable (which is the connection from starting the multiprocessing pipe) to the constructor to enable communication between tkinter and Flet. It then runs the main application loop.
