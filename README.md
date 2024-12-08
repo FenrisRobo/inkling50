@@ -71,6 +71,7 @@ The Notepad part of inkling50
 
 
 
+
 ## Contributors
 - Ben Raihane - Homepage & GUI
 - Ha Le - Timer, Calendar, DESIGN.md & README.md
