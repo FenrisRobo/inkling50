@@ -42,6 +42,38 @@ Notepad uses the framework tkinter to implement basic word-processing functional
 
 ## Communication Flow Between Timer & Notepad
 
+We use a multiprocessing pipe to establish communication between `timer.py` (main thread) and `notepad.py` (daemon thread). A `Notepad` object (tkinter) is created by ```start_tkinter(pipe)```. A timer object (Flet) is created by `start_flet(pipe)`. The pipe is used to send and receive messages between the two processes. Both the Flet and tkinter processes have `send_to_tkinter(msg)` and `send_to_flet(msg)` respectively that include `pipe.send()` to send messages to the other process. They both have `check_pipe()` scheduled to run every 100 ms. `if pipe.poll()` checks whether there is data available to be read. If it is true, `pipe.recv()` retrieves the message from the pipe. This message is stored in a variable and runs through an if-elif block to call the corresponding function. Below is the expected flow of communication between the two processes.  
+ 
+ F represents Flet  
+ T represents tkinter  
+ ** means the event always occurs 
+
+1. **(Timer & notepad opens) F -> T: "Not started"
+   - T disable typing in Notepad so that the user can not work unless the timer is started.
+2. **(User press Start timer) F -> T: "User started"
+   - T enable typing in Notepad
+   - T runs its own idle timer which reset if user starts typing again within 5 seconds**
+3. (User stopped typing for more than 5 seconds) T -> F: "Idle expired"
+   - F starts its timer where the user has the specified amount of time left to work before their work in the text area deletes.
+4. (User press Done on timer) F -> T: "Done"
+   - T disable typing in Notepad to prevent the user from pressing Done to avoid the timer
+   - T calls `__saveFile()` to prompt the user to save their work as PDF (which is not easily copied from)
+   - After the user saves the file or presses canceled, T calls `__deleteDocument()` to delete the document and close Notepad
+5. (Timer ran out) F -> T: "Timer expired"
+   - T show info dialog to inform the user
+   - T calls `__saveFile()` to prompt the user to save their work as PDF (which is not easily copied from)
+   - After the user saves the file or presses canceled, T calls `__deleteDocument()` to delete the document and close Notepad
+6. **(__deleteDocument() is called) T -> F: "End"
+   - F close the Flet timer window  
+  
+There are 3 possible patterns for the communication flow, referencing the list above:  
+- User never triggered the timer - Flet side
+   - 1 -> 2 -> 4 -> 6
+- User trigger the timer - Flet side but press Done
+   - 1 -> 2 -> 3 -> 4 -> 6
+- User trigger the timer - Flet side and the timer runs out
+   - 1 -> 2 -> 3 -> 5 -> 6
+
 ## Calendar - inkling50.py (Flet)
 
 Calendar, which is in our "Best" outcome, uses the framework Flet and is implemented at the top of `inkling50.py`.
