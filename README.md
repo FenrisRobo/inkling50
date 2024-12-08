@@ -13,6 +13,12 @@ inkling50 is a notepad-based productivity app designed to increase the user's wr
 - Calendar Function
   - A basic monthly view calendar with the ability to view previous and next months.
 
+## Program Flow
+
+When the program first opens, the user will be presented with a homepage. From the left sidebar, the user can click the `calendar` icon to view the calendar within the same window. The `home` icon will return to the starting screen. The `notepad` icon will open the main component of our program: Notepad and Timer.
+
+At the opening of Notepad and Timer (which happens concurrently), the user will be prompted to set the amount of time that they have left to work on their document after the idle (5 seconds) expires. Once they click `Start`, the timer will not start immediately but rather send a message to Notepad - tkinter to enable typing and trigger the idle timer. Within the text area while typing is enabled, the user can change the text formatting to help them visually during the writing process. Once the idle expires, the timer begins counting down. When the timer expires, typing will be disabled, the user will be notified and prompted to save as a PDF, the text area content deletes, and Notepad with Timer will exit The user will then be returned to Homepage. At any point from when the user click `Start` and the expiration of the timer, they can click `Done` to reach the same end case.
+
 ## Installation
 
 ### General Instructions
@@ -47,21 +53,17 @@ Specifically for the CS50 TFs grading Inkling50 (first of all, merry CS50-mas!),
 
 ## Usage
 
-### Homepage & GUI
+### Homepage
 
-The Homepage/GUI part of Inkling50 contains all the other programs such as calendar, time, and notepad. The main asepects of the Homepage/GUI portion of the Inkling50's application are the user's landing page and menu with icons that reference calendar, timer, notepad, and the landing page itself. The landing page and menu are colored specifically to be light-green and dark-green respectively, to create an aesthetic, productivity-based vibe that we were going for in the Inkling50 application. The buttons, font styles, and icon in general have been inspired from built-in Python code/libraries and integrated into the GUI via QtEditor. The menu itself is fixed, given that there are only currently four options that are available, and is on the left-side of the Inkling50 window. The menu ensures that the user can access all applications at every other applications within Inkling50. The landing page also contains a greeting message for the user that is based upon the time-settings of the user's device. From 6:00 AM to 11:59 AM, the message will say "Good Morning!". From 12:00 PM to 5:59 PM, the message will say "Good Afternoon!". From 6:00 PM onward until 6:00 AM, the message will say "Good Evening!" Furthermore, the landing page also includes instructions, calling for the user to "Select an option from the menu."
+The Homepage/GUI part of Inkling50 contains all the other programs such as calendar, time, and notepad. The main asepects of the Homepage/GUI portion of the Inkling50's application are the user's landing page and menu with icons that reference calendar, timer, notepad, and the landing page itself. The landing page and menu are colored specifically to be light-green and dark-green respectively, to create an aesthetic, productivity-based vibe that we were going for in the Inkling50 application. The buttons, font styles, and icon in general have been inspired from built-in Python code/libraries and integrated into the GUI. The menu itself is fixed, given that there are only currently four options that are available, and is on the left-side of the Inkling50 window. The menu ensures that the user can access all applications at every other applications within Inkling50. The landing page also contains a greeting message for the user that is based upon the time-settings of the user's device. From 6:00 AM to 11:59 AM, the message will say "Good Morning!". From 12:00 PM to 5:59 PM, the message will say "Good Afternoon!". From 6:00 PM onward until 6:00 AM, the message will say "Good Evening!" Furthermore, the landing page also includes instructions, calling for the user to "Select an option from the menu."
 
-### Timer & Calendar
+### Notepad & Timer
 
-The Timer/Calendar part of Inkling50 constitutes the main time-management portion of the "productivity" aspects of Inkling50 in the sense that 
+...
 
-### Notepad
+### Calendar
 
 The Notepad part of Inkling50 
-
-## Program Flow
-
-Upon clicking on the Inkling50 icon, the user should enter into the "Homepage" part of the application. Here, the user should see a green menu bar on the left-side of the flet/gui window. 
 
 ## FAQs 
 
@@ -69,5 +71,5 @@ Upon clicking on the Inkling50 icon, the user should enter into the "Homepage" p
 
 ## Contributors
 - Ben Raihane - Homepage & GUI
-- Ha Le - Timer & Calendar
-- Ryan Whalen - Notepad
+- Ha Le - Timer, Calendar, DESIGN.md, & README.md
+- Ryan Whalen - Notepad & README.md
