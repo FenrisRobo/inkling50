@@ -1,6 +1,7 @@
 import flet as ft
 from datetime import datetime
 import calendar
+import os
 
 # Colors
 PRIMARY_COLOR = "#B7D4B1"
@@ -168,6 +169,28 @@ def main(page: ft.Page):
     # Content panel
     content = ft.Container(width=700, bgcolor=BACKGROUND_COLOR, expand=True)
 
+    # Change user greeting based on current system time
+    def greet_user():
+        # Get current system time and format
+        current_time_string = datetime.now().time().strftime("%H:%M")
+        current_time_list = current_time_string.split(':')
+
+        # Convert the hour string into an int
+        try:
+            hour = int(current_time_list[0])
+        except:
+            print("Error converting hour for greeting")
+        
+        # Change greeting based on current hour
+        if hour >= 0 and hour <= 12:
+            greet = "Good morning"
+        elif hour > 12 and hour <= 17:
+            greet = "Good afternoon"
+        elif hour > 17 and hour <= 23:
+            greet = "Good evening"
+        
+        return greet
+
     # Load the calendar
     def load_calendar():
         history_manager = HistoryManager()
@@ -182,10 +205,15 @@ def main(page: ft.Page):
             content=calendar_grid,
         )
         content.update()
+    
+    # Load notepad with timer
+    def load_notepad_timer():
+        os.system("flet timer.py")
 
     # Load home screen
     def load_home():
-        content.content = ft.Text("Welcome to Inkling50! Select an option from the menu.", size=18)
+        greeting = greet_user()
+        content.content = ft.Text(f"{greeting}, welcome to inkling50!\nSelect an option from the menu.", size=18)
         content.update()
 
     # Sidebar layout
@@ -206,6 +234,7 @@ def main(page: ft.Page):
                 # Sidebar Icons
                 ft.IconButton("home", icon_color=TEXT_COLOR, on_click=lambda _: load_home()),
                 ft.IconButton("calendar_today", icon_color=TEXT_COLOR, on_click=lambda _: load_calendar()),
+                ft.IconButton("description", icon_color=TEXT_COLOR, on_click=lambda _: load_notepad_timer())
             ],
             spacing=5,
             alignment=ft.MainAxisAlignment.START,
