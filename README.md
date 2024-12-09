@@ -23,23 +23,11 @@ At the opening of Notepad with Timer, the user will be prompted to set the amoun
 
 ### General Instructions
 
-First, users must navigate to the inkling50 GitHub page. Prior to doing anything, the user must login to their GitHub account and request permission from Ben Raihane. Upon approval, the user will be able to download 
-
-[the inkling50 file by directly clicking on the {insert Ben's GUI program name} and, on the file view page, right-click the "Raw" button in the upper right-hand corner and select "Save link as.../Save target as". Once the user has chosen an appropriate location for the file, click Save, with renaming being possible if the user so chooses.]
-
-/
-
-[the entire inkling50 repository by clicking on the green "Code" button on the main repository page. Once the dropdown menu appears, select Download Zip.] 
+First, users must navigate to the inkling50 GitHub page. Prior to doing anything, the user must login to their GitHub account and request permission from Ben Raihane. Upon approval, the user will be able to download the inkling50 file by directly clicking on the inkling50.py file and, on the file view page, right-click the "Raw" button in the upper right-hand corner and select "Save link as.../Save target as". Once the user has chosen an appropriate location for the file, click Save, with renaming being possible if the user so chooses.
 
 Though the user shouldn't need to download specific releases of inkling50 (as the main repository will continue the newest/fully functional version of the application), the user can choose to do so via two methods. Primarily, on the main repository page, the user should click on "Releases" on the lower right-hand side. A new page should appear, showing releases from newest to oldest. Choose the release you want to download, and click Assets to expand. Click the zip file to download it. Alternatively, on the main repository page, the user can click "Tags" underneath the username. A list of releases should appear from newest to oldest once again. Click the zip file below the tag to download it to the user's device. 
 
-Secondly, at this point, we'll assume the user has installed [insert Ben's GUI program name/installer] which includes the functionalities of inkling50.py (found in gui), notepad.py, and timer.py (both found in main). 
-
-[This {insert Ben's GUI program name/installer} operates similarly to how a Google Chrome or Epic Games pre-installer works, whereby in order to download the actual application itself, the user must first click on the pre-installer to initiate the downloading process of inkling50's full application. Upon completing the pre-installation process, the user can choose to delete the pre-installer and open the full application, inkling50, by clicking on the feather-pen icon.]
-
-/
-
-[This {insert Ben's GUI program name} is the full, direct inkling50 application. By clicking on the feather-pen icon, the user can open up inkling50.]
+Secondly, at this point, we'll assume the user has installed inkling50.py which includes the functionalities of inkling50.py (found in the gui folder), notepad.py, and timer.py (both found in the main folder). This inkling50.py file operates similarly to how a Google Chrome or Epic Games pre-installer works, whereby in order to download the actual application itself, the user must first click on the pre-installer to initiate the downloading process of inkling50's full application. Upon completing the pre-installation process, the user can choose to delete the pre-installer and open the full application, inkling50, by clicking on the feather-pen icon.
 
 Thirdly, if the user optionally chooses on Windows, the user can right-click on the inkling50 icon in their taskbar to pin it there. In the future, instead of having to find the folder that they installed inkling50 in repetitively to open the application, they can directly navigate to the inkling50 icon in their taskbar. If the user is on MacOS, the user can right-click on the inkling50 icon in their Dock to pin it there. The rest of the process is similar to Windows. 
 
