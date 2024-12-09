@@ -23,7 +23,7 @@ Since Flet is asynchronous (where multiple functions can run concurrently withou
 
 ## Testing
 
-To test our source code at the command line, please run navigate to the ***directory of the source code** and run this command in your terminal:
+To test our source code at the command line, please run navigate to the ***directory of the source code** and run this command in your terminal:  
    ```pip install -r requirements.txt```
 
 To run all the components of our project (which starts from Homepage):  
