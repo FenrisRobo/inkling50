@@ -1,5 +1,7 @@
 # inkling50
-inkling50 is a notepad-based productivity app designed to increase the user's writing efficiency by enforcing continuous typing via a timer. Stop for too long and... POOF! There goes your work! 
+inkling50 is a notepad-based productivity app designed to increase the user's writing efficiency by enforcing continuous typing via a timer. Stop for too long and... POOF! There goes your work!
+
+YouTube Video Link: https://youtu.be/oKuuKOcC3i0
 
 ## Features
 - Homepage
