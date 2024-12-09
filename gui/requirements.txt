@@ -1,0 +1,5 @@
+tk
+ttkbootstrap
+flet
+flet-timer
+fpdf
