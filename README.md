@@ -66,4 +66,4 @@ The Calendar gives the user a monthly view. The user can press the left arrow to
 ## Contributors
 - Ben Raihane - Homepage & GUI
 - Ha Le - Timer, Calendar, DESIGN.md & README.md
-- Ryan Whalen - Notepad & README.md
+- Ryan Whalen - Notepad & README.md 

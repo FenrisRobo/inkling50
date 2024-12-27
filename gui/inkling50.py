@@ -208,7 +208,7 @@ def main(page: ft.Page):
     
     # Load notepad with timer
     def load_notepad_timer():
-        os.system("flet timer.py")
+        os.system("python timer.py")
 
     # Load home screen
     def load_home():
