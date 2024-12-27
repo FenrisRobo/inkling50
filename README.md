@@ -1,5 +1,7 @@
 # inkling50
-inkling50 is a notepad-based productivity app designed to increase the user's writing efficiency by enforcing continuous typing via a timer. Stop for too long and... POOF! There goes your work! 
+inkling50 is a notepad-based productivity app designed to increase the user's writing efficiency by enforcing continuous typing via a timer. Stop for too long and... POOF! There goes your work!
+
+YouTube Video Link: https://youtu.be/oKuuKOcC3i0
 
 ## Features
 - Homepage
@@ -21,20 +23,33 @@ At the opening of Notepad with Timer, the user will be prompted to set the amoun
 
 ## Installation
 
+### CS50 TF Instructions
+
+Specifically for the CS50 TFs grading inkling50 (first of all, merry CS50-mas!), the .zip file should contain the raw, source code for notepad.py, timer.py, and inkling50.py. In order to view this code in Visual Studio Code (assuming this is the main IDE that graders are using), the user should unzip the file in their chosen file location. Then, the user should drag the files into the Explorer side of VS Code. By entering into the file location that the notepad.py, timer.py, and inkling50.py (with inkling50.py being the most important as it is the GUI which contains calls to notepad and timer) is downloaded in, the user should run the following commands in the terminal:
+
+To install the required modules  
+`pip install -r requirements.txt`  
+
+To start the application  
+`flet inkling50.py`
+
+
 ### General Instructions
 
 
-First/primarily, users must navigate to the inkling50 GitHub page. Prior to doing anything, the user must login to their GitHub account and request permission from Ben Raihane. Upon approval, the user will be able to download the inkling50 repository by clicking on the green "Code" button on the main repository page. Once the dropdown menu appears, select Download Zip. Once the user has completed that, they will navigate to the folder that they downloaded the zipped file in and unzip it in another folder location of their choosing (ideally in the same folder they downloaded the original zipped file in). After locating the unzipped folder, the user should drag this folder into an IDE (Integrated Development Environment) like Visual Studio Code. Then, after opening the folder in Visual Studio Code via commands in the terminal, the user should run 'pip install -r requirements.txt' and run 'flet inkling50.py' in their terminal. 
+First/primarily, users must navigate to the inkling50 GitHub page. Prior to doing anything, the user must login to their GitHub account and request permission from Ben Raihane. Upon approval, the user will be able to download the inkling50 repository by clicking on the green "Code" button on the main repository page. The user needs to download the `gui` folder. Once the dropdown menu appears, select Download Zip. Once the user has completed that, they will navigate to the folder that they downloaded the zipped file in and unzip it in another folder location of their choosing (ideally in the same folder they downloaded the original zipped file in). After locating the unzipped folder, the user should drag this folder into an IDE (Integrated Development Environment) like Visual Studio Code. Then, after opening the folder in Visual Studio Code, the user should run the following commands in the terminal:  
+
+To install the required modules  
+`pip install -r requirements.txt`  
+
+To start the application  
+`flet inkling50.py`
 
 Secondly/alternatively, though the user shouldn't need to download specific releases of inkling50 (as the main repository will continue the newest/fully functional version of the application), the user can choose to do so via two methods. Primarily, on the main repository page, the user should click on "Releases" on the lower right-hand side. A new page should appear, showing releases from newest to oldest. Choose the release you want to download, and click Assets to expand. Click the zip file to download it. Alternatively, on the main repository page, the user can click "Tags" underneath the username. A list of releases should appear from newest to oldest once again. Click the zip file below the tag to download it to the user's device. 
 
 Thirdly/lastly, the method to ensure successful installation include: (1) checking that the inkling50 opens when clicked, (2) there are no security messages/error messages that pops up when clicking on various buttons in the homepage, and (3) there are no conflicts between inkling50 and any existing user program files/packages. 
 
 There you go! The user should have correctly installed inkling50 and will be able to use it without any error/interruption! 
-
-### CS50 TF Instructions
-
-Specifically for the CS50 TFs grading inkling50 (first of all, merry CS50-mas!), the .zip file should contain the raw, source code for notepad.py, timer.py, and inkling50.py. In order to view this code in Visual Studio Code (assuming this is the main IDE that graders are using), the user should unzip the file in their chosen file location. Then, the user should drag the files into the Explorer side of VS Code. By entering into the file location that the notepad.py, timer.py, and inkling50.py (with inkling50.py being the most important as it is the gui which contains calls to notepad and timer) is downloaded in using one's VS Code terminal, the user should type python inkling50.py to run the code to make sure that everything is working properly.
 
 ## Usage
 
